@@ -1,7 +1,7 @@
-package nl.rug.aoop.messagequeue.command;
+package nl.rug.aoop.networking.command;
 
-import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
+import nl.rug.aoop.networking.command.MQPutCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,14 +20,17 @@ public class TestMQPutCommand {
         this.queue = new ThreadSafeMessageQueue();
         this.command = new MQPutCommand(this.queue);
         this.params = new HashMap();
-        this.params.put("Header", "Test Header");
-        this.params.put("Body", "Test Body");
+        this.params.put("header", "Test Header");
+        this.params.put("body", "Test Body");
 
     }
 
     @Test
     void TestPut() {
+        assertEquals(0, this.queue.getSize());
         this.command.execute(this.params);
-        assertEquals(this.queue.getHead().getHeader(), this.params.get("Header"));
+        assertEquals(this.queue.getHead().getHeader(), this.params.get("header"));
+        assertEquals(this.queue.getHead().getBody(), this.params.get("body"));
+        assertEquals(1, this.queue.getSize());
     }
 }

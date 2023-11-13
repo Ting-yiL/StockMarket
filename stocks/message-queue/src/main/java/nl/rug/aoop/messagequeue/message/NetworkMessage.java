@@ -31,6 +31,15 @@ public class NetworkMessage implements Comparable<NetworkMessage> {
     }
 
     /**
+     * This constructor of NetworkMessage.
+     * @param command The command of the message.
+     * @param message The message.
+     */
+    public NetworkMessage(String command, Message message) {
+        this(command, message.getHeader(), message.getBody(), message.getTimestamp());
+    }
+
+    /**
      * The constructor of NetworkMessage that time is specified.
      * @param command The command of the message.
      * @param messageHeader The header of the message.

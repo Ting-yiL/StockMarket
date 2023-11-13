@@ -1,6 +1,5 @@
 package nl.rug.aoop.application.util;
 
-import nl.rug.aoop.messagequeue.handler.NetworkProducerMessageHandler;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
 import nl.rug.aoop.networking.server.Server;
 

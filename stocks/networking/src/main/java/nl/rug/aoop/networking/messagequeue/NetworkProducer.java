@@ -1,8 +1,9 @@
-package nl.rug.aoop.messagequeue.producer;
+package nl.rug.aoop.networking.messagequeue;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
+import nl.rug.aoop.messagequeue.producer.MQProducer;
 import nl.rug.aoop.networking.client.Client;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.io.IOException;
  * @version 1.0
  */
 @Slf4j
-public class NetworkProducer implements MQProducer{
+public class NetworkProducer implements MQProducer {
     Client client;
 
     /**

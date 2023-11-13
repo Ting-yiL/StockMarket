@@ -1,4 +1,4 @@
-package nl.rug.aoop.messagequeue.command;
+package nl.rug.aoop.networking.command;
 
 import java.util.Map;
 

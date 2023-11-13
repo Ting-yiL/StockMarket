@@ -12,7 +12,9 @@ module networking {
     requires org.slf4j;
     requires command;
     requires awaitility;
+    requires messagequeue;
     exports nl.rug.aoop.networking.handler;
     exports nl.rug.aoop.networking.client;
     exports nl.rug.aoop.networking.server;
+    exports nl.rug.aoop.networking.messagequeue;
 }
