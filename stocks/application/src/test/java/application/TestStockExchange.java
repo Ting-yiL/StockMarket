@@ -31,8 +31,7 @@ public class TestStockExchange {
         YamlLoader yamlLoader2 = new YamlLoader(TRADERPATH);
 
         StockMap stocks = yamlLoader1.load(StockMap.class);
-        List<Trader> tradersList = yamlLoader2.load(new TypeReference<List<Trader>>() {
-        });
+        List<Trader> tradersList = yamlLoader2.load(new TypeReference<>() {});
 
         this.stockExchange = new StockExchangeData(stocks, tradersList);
     }

@@ -18,7 +18,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestMQNetworkIntegration {
-    public static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 5000;
     private Server server;
     private ThreadSafeMessageQueue queue;
     private NetworkConsumer consumer;
