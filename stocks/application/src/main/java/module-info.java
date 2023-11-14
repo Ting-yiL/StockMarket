@@ -11,11 +11,11 @@ module application {
     requires com.google.gson;
     requires awaitility;
     exports nl.rug.aoop.application.stockExchange;
-    opens nl.rug.aoop.application.stockExchange to com.fasterxml.jackson.databind;
+    opens nl.rug.aoop.application.stockExchange to com.fasterxml.jackson.databind, com.google.gson;
     exports nl.rug.aoop.application.stock;
-    opens nl.rug.aoop.application.stock to com.fasterxml.jackson.databind;
+    opens nl.rug.aoop.application.stock to com.fasterxml.jackson.databind, com.google.gson;
     exports nl.rug.aoop.application.trader;
-    opens nl.rug.aoop.application.trader to com.fasterxml.jackson.databind;
+    opens nl.rug.aoop.application.trader to com.fasterxml.jackson.databind, com.google.gson;
     exports nl.rug.aoop.application.order;
     exports nl.rug.aoop.application.order.comparator;
     exports nl.rug.aoop.application.trader.tradingStrategy;

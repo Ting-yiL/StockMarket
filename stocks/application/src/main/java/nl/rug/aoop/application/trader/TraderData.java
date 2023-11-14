@@ -1,5 +1,6 @@
 package nl.rug.aoop.application.trader;
 
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import java.util.List;
 @Setter
 @Getter
 public class TraderData implements TraderDataModel {
+    private static final Gson GSON = new Gson();
     private String id;
     private String name;
     private double funds;
@@ -51,4 +53,13 @@ public class TraderData implements TraderDataModel {
     public String toString() {
         return "\nId: " + id + "\nName: " + name + "\nFunds: " + funds;
     }
+
+    public String toJson() {
+        return GSON.toJson(this);
+    }
+
+    public static TraderData fromJson(String json) {
+        return GSON.fromJson(json, TraderData.class);
+    }
+
 }
