@@ -1,7 +1,7 @@
 package application;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import nl.rug.aoop.application.trader.Trader;
+import nl.rug.aoop.application.trader.TraderData;
 import nl.rug.aoop.util.YamlLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestTraderList {
     private final Path TRADERPATH = Path.of("C:\\Users\\ting\\IdeaProjects\\rug\\2023_Team_083\\stocks\\data\\traders.yaml");
     private YamlLoader yamlLoader;
-    private List<Trader> tradersList;
+    private List<TraderData> tradersList;
 
     @BeforeEach
     void SetUp() throws IOException {
         this.yamlLoader = new YamlLoader(TRADERPATH);
-        this.tradersList = this.yamlLoader.load(new TypeReference<List<Trader>>() {});
+        this.tradersList = this.yamlLoader.load(new TypeReference<List<TraderData>>() {});
     }
 
     @Test
@@ -40,7 +40,7 @@ public class TestTraderList {
     void TestGetTraderInfo() {
         List<String> expectedList = new ArrayList<>(Arrays.asList("NVDA", "AMD", "AAPL", "ADBE", "FB"));
 
-        Trader trader1 = this.tradersList.get(0);
+        TraderData trader1 = this.tradersList.get(0);
         assertEquals("bot1", trader1.getId());
         assertEquals("Just Bob", trader1.getName());
         assertEquals(expectedList, trader1.getOwnedStocks());

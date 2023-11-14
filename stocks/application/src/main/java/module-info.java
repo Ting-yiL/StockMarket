@@ -9,6 +9,7 @@ module application {
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires com.google.gson;
+    requires awaitility;
     exports nl.rug.aoop.application.stockExchange;
     opens nl.rug.aoop.application.stockExchange to com.fasterxml.jackson.databind;
     exports nl.rug.aoop.application.stock;
@@ -17,4 +18,6 @@ module application {
     opens nl.rug.aoop.application.trader to com.fasterxml.jackson.databind;
     exports nl.rug.aoop.application.order;
     exports nl.rug.aoop.application.order.comparator;
+    exports nl.rug.aoop.application.trader.tradingStrategy;
+    opens nl.rug.aoop.application.trader.tradingStrategy to com.fasterxml.jackson.databind;
 }

@@ -2,12 +2,9 @@ package application.order;
 
 import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.order.comparator.BuyOrderComparator;
-import nl.rug.aoop.application.stock.Stock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.PriorityQueue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

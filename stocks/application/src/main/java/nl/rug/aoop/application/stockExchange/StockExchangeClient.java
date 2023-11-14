@@ -1,10 +1,7 @@
 package nl.rug.aoop.application.stockExchange;
 
 import nl.rug.aoop.messagequeue.message.Message;
-import nl.rug.aoop.networking.handler.MessageHandler;
-import nl.rug.aoop.networking.messagequeue.NetworkCommunicator;
 import nl.rug.aoop.networking.messagequeue.NetworkConsumer;
-import nl.rug.aoop.networking.client.Client;
 
 public class StockExchangeClient {
     private StockExchangeData stockExchangeData;

@@ -7,11 +7,9 @@ import nl.rug.aoop.application.stockExchange.StockExchangeMessageHandler;
 import nl.rug.aoop.initialization.SimpleViewFactory;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;
 import nl.rug.aoop.application.stock.StockMap;
-import nl.rug.aoop.application.trader.Trader;
-import nl.rug.aoop.messagequeue.message.Message;
+import nl.rug.aoop.application.trader.TraderData;
 import nl.rug.aoop.networking.client.Client;
 import nl.rug.aoop.networking.handler.NetworkConsumerMessageHandler;
-import nl.rug.aoop.networking.messagequeue.Communicator;
 import nl.rug.aoop.networking.messagequeue.NetworkCommunicator;
 import nl.rug.aoop.networking.messagequeue.NetworkConsumer;
 import nl.rug.aoop.util.YamlLoader;
@@ -20,12 +18,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class StockApplication {
     private static final int TIMEOUT = 5000;
-    private final int port = Integer.parseInt(System.getenv("MESSAGE_QUEUE_PORT"));
+    private final int port = 6200;
     private final Path STOCKPATH = Path.of("stocks","data", "stocks.yaml");
     private final Path TRADERPATH = Path.of("stocks","data", "traders.yaml");
     private StockExchangeData stockExchange;
@@ -87,7 +84,7 @@ public class StockApplication {
         YamlLoader yamlLoader1 = new YamlLoader(stockPath);
         YamlLoader yamlLoader2 = new YamlLoader(tradePath);
 
-        List<Trader> tradersList;
+        List<TraderData> tradersList;
         StockMap stocks;
         stocks = yamlLoader1.load(StockMap.class);
         tradersList = yamlLoader2.load(new TypeReference<>() {});

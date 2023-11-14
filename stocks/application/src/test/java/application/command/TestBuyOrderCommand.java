@@ -5,7 +5,7 @@ import nl.rug.aoop.application.command.BuyOrderCommand;
 import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;
-import nl.rug.aoop.application.trader.Trader;
+import nl.rug.aoop.application.trader.TraderData;
 import nl.rug.aoop.util.YamlLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class TestBuyOrderCommand {
         YamlLoader yamlLoader2 = new YamlLoader(TRADERPATH);
 
         StockMap stocks = yamlLoader1.load(StockMap.class);
-        List<Trader> tradersList = yamlLoader2.load(new TypeReference<>() {});
+        List<TraderData> tradersList = yamlLoader2.load(new TypeReference<>() {});
 
         this.stockExchange = new StockExchangeData(stocks, tradersList);
 

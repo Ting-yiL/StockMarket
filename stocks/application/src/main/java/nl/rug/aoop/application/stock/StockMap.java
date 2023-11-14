@@ -9,4 +9,10 @@ import java.util.Map;
 @Setter
 public class StockMap {
     private Map<String, Stock> stocks;
+
+    public void setStockPrice(Stock stock) {
+        if (stocks.containsValue(stock)) {
+            stocks.put(stock.getSymbol(), stock);
+        }
+    }
 }
