@@ -1,11 +1,12 @@
 package nl.rug.aoop.networking.messagequeue;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.messagequeue.consumer.MQConsumer;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.networking.client.Client;
-import nl.rug.aoop.networking.messagequeue.MQCommunicator;
+import org.awaitility.core.ConditionTimeoutException;
 
 import java.time.Duration;
 
@@ -13,14 +14,15 @@ import static org.awaitility.Awaitility.await;
 
 @Slf4j
 public class NetworkConsumer implements MQConsumer {
+    @Getter
     private final Client client;
-    private MQCommunicator mqCommunicator;
+    private NetworkCommunicator communicator;
     private final int TIMEOUT = 5000;
 
 
-    public NetworkConsumer(Client client) {
+    public NetworkConsumer(Client client, NetworkCommunicator communicator) {
         this.client = client;
-        this.mqCommunicator = new MQCommunicator();
+        this.communicator = communicator;
     }
 
     public String createPollMessage() {
@@ -29,12 +31,17 @@ public class NetworkConsumer implements MQConsumer {
 
     @Override
     public Message poll() {
+        Message message = null;
         String jsonMessage = this.createPollMessage();
         log.info(jsonMessage);
         client.sendMessage(jsonMessage);
-        await().atMost(Duration.ofMillis(TIMEOUT)).until(mqCommunicator::getStatus);
-        Message message = mqCommunicator.getMessage();
-        mqCommunicator.resetStatus();
+        try {
+            await().atMost(Duration.ofMillis(TIMEOUT)).until(() -> communicator.getStatus());
+            message = this.communicator.getMessage();
+            this.communicator.resetStatus();
+        } catch (ConditionTimeoutException e) {
+            log.error("Empty queue", e);
+        }
         return message;
     }
 }

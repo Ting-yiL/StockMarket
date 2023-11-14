@@ -36,9 +36,9 @@ public class MQPutCommand implements Command {
                 String body = (String) params.get("body");
                 this.queue.enqueue(new Message(header, body));
                 log.info("Enqueue Successful, Header: " + header + ", Body: " + body);
-                return;
+            } else {
+                log.info("Enqueue Unsuccessful");
             }
         }
-        log.info("Enqueue Unsuccessful");
     }
 }

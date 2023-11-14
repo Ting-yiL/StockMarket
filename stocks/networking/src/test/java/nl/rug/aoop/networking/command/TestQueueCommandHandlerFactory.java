@@ -2,7 +2,7 @@ package nl.rug.aoop.networking.command;
 
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
-import nl.rug.aoop.networking.messagequeue.handler.MQServerCommandHandlerFactory;
+import nl.rug.aoop.networking.handler.MQServerCommandHandlerFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

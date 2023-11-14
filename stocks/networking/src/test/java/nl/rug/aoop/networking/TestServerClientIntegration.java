@@ -1,12 +1,13 @@
 package nl.rug.aoop.networking;
 
 import nl.rug.aoop.networking.client.Client;
+import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.server.Server;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
@@ -20,22 +21,17 @@ public class TestServerClientIntegration {
     public static final int TIMEOUT = 5000;
     private Server server;
     private Client client;
-
-    @Mock
-    private MessageHandler serverMessageHandlerMock;
-
-    @Mock
-    private MessageHandler clientMessageHandlerMock;
+    private MQServerMessageHandler serverMessageHandlerMock;
 
     @BeforeEach
     public void setUp() throws IOException {
-        MockitoAnnotations.openMocks(this);
+        this.serverMessageHandlerMock = Mockito.mock(MQServerMessageHandler.class);
 
         server = new Server(0, serverMessageHandlerMock);
         new Thread(server).start();
         await().atMost(Duration.ofMillis(TIMEOUT)).until(server::isRunning);
 
-        client = new Client(new InetSocketAddress("localhost", server.getPort()), clientMessageHandlerMock);
+        client = new Client(new InetSocketAddress("localhost", server.getPort()), Mockito.mock(MessageHandler.class));
         new Thread(client).start();
         await().atMost(Duration.ofMillis(TIMEOUT)).until(client::isRunning);
     }

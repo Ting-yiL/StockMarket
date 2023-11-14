@@ -1,4 +1,4 @@
-package nl.rug.aoop.networking.messagequeue.handler;
+package nl.rug.aoop.networking.handler;
 
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;

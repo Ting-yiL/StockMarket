@@ -2,16 +2,15 @@ package nl.rug.aoop.networking.messagequeue;
 
 import lombok.Getter;
 import nl.rug.aoop.messagequeue.message.Message;
-import nl.rug.aoop.networking.messagequeue.Communicator;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MQCommunicator implements Communicator {
+public class NetworkCommunicator implements Communicator {
     AtomicBoolean received = new AtomicBoolean(false);
     @Getter
     Message message;
 
-    public MQCommunicator() {}
+    public NetworkCommunicator() {}
 
     public void receiveMessage(Message message) {
         if (message != null) {

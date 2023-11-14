@@ -1,11 +1,12 @@
-package nl.rug.aoop.networking.messagequeue.handler;
+package nl.rug.aoop.networking.handler;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
-import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.messagequeue.Communicator;
+import nl.rug.aoop.networking.server.ClientHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,18 +16,18 @@ public class MQServerMessageHandler implements MessageHandler{
     private final Map<String, Object> params;
     private final ThreadSafeMessageQueue queue;
     private final CommandHandler commandHandler;
-    private final Communicator reference;
+    @Setter
+    private ClientHandler reference = null;
 
-    public MQServerMessageHandler(ThreadSafeMessageQueue queue, Communicator reference) {
+    public MQServerMessageHandler(ThreadSafeMessageQueue queue) {
         this.params = new HashMap<>();
         this.queue = queue;
         this.commandHandler = new MQServerCommandHandlerFactory(this.queue).createMQCommandHandler();
-        this.reference = reference;
     }
 
-    public void handleMessage(String jsonMessage) {
+    public synchronized void handleMessage(String jsonMessage) {
         if (jsonMessage != null) {
-            log.info("Handling message of Network Consumer..");
+            log.info("Handling message..");
             NetworkMessage networkMessage = NetworkMessage.fromJson(jsonMessage);
 
             String command = networkMessage.getCommand();

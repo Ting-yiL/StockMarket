@@ -2,8 +2,8 @@ package nl.rug.aoop.networking.server;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
-import nl.rug.aoop.networking.handler.ServerMessageHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,7 +23,7 @@ public class Server implements Runnable{
     private Map<Integer, ClientHandler> clientHandlerMap;
     private final ServerSocket serverSocket;
     private final ExecutorService service;
-    private final MessageHandler messageHandler;
+    private MessageHandler messageHandler;
     private int id = 0;
     @Getter
     private boolean running = false;
@@ -31,14 +31,13 @@ public class Server implements Runnable{
     /**
      * The constructor of the Server.
      * @param port The port in which the connection happens.
-     * @param messageHandler The messageHandler you want to use.
      * @throws IOException In case of IOException error.
      */
     public Server(int port, MessageHandler messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
-        this.messageHandler = messageHandler;
         this.clientHandlerMap = new HashMap<>();
+        this.messageHandler = messageHandler;
     }
 
     /**
@@ -61,7 +60,8 @@ public class Server implements Runnable{
                 Socket socket = this.serverSocket.accept();
                 log.info("New connection from client");
                 log.info("Accepted new client connection from: " + socket.getRemoteSocketAddress());
-                clientHandlerMap.put(this.id, new ClientHandler(socket, this.messageHandler, this.id, this));
+                clientHandlerMap.put(this.id, new ClientHandler(socket, (MQServerMessageHandler) this.messageHandler,
+                        this.id, this));
                 this.service.submit(clientHandlerMap.get(id));
                 this.id++;
             } catch (IOException e) {
