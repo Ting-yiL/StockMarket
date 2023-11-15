@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,6 +65,7 @@ public class Server implements Runnable{
                         this.id, this));
                 this.service.submit(clientHandlerMap.get(id));
                 this.id++;
+                //this.messageHandler.setClientHandlers((List<ClientHandler>) clientHandlerMap.values());
             } catch (IOException e) {
                 log.error("Socket error", e);
             }

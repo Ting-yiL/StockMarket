@@ -1,32 +1,24 @@
-package nl.rug.aoop.networking.handler;
+package nl.rug.aoop.application.trader;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import nl.rug.aoop.application.trader.command.TraderClientCommandHandlerFactory;
 import nl.rug.aoop.command.CommandHandler;
+import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
-import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
-import nl.rug.aoop.networking.messagequeue.Communicator;
-import nl.rug.aoop.networking.server.ClientHandler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class MQServerMessageHandler implements MessageHandler{
+public class TraderClientMessageHandler {
     private final Map<String, Object> params;
-    private final ThreadSafeMessageQueue queue;
-    private final CommandHandler commandHandler;
-    //@Setter
-    //private List<ClientHandler> clientHandlers = new ArrayList<>();
-    @Setter
-    private ClientHandler reference = null;
+    private CommandHandler commandHandler;
+    private TraderClientCommandHandlerFactory commandHandlerFactory;
 
-    public MQServerMessageHandler(ThreadSafeMessageQueue queue) {
+    public TraderClientMessageHandler(TraderClient traderClient) {
+        this.commandHandlerFactory = new TraderClientCommandHandlerFactory(traderClient);
+        this.commandHandler = this.commandHandlerFactory.createTraderClientCommandHandler();
         this.params = new HashMap<>();
-        this.queue = queue;
-        this.commandHandler = new MQServerCommandHandlerFactory(this.queue).createMQCommandHandler();
     }
 
     public synchronized void handleMessage(String jsonMessage) {
@@ -44,8 +36,6 @@ public class MQServerMessageHandler implements MessageHandler{
             String body = networkMessage.getBody();
             log.info("Body: " + body);
             this.params.put("body", body);
-
-            this.params.put("reference", reference);
 
             this.commandHandler.execute(command, params);
         }

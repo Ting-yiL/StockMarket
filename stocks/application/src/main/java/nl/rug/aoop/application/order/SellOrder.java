@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
  * The SellOrder.
  */
 public class SellOrder extends LimitOrder {
-    private static Gson g;
+    private static final Gson g = new Gson();
 
     /**
      * The constructor of the sellOrder.
@@ -18,9 +18,6 @@ public class SellOrder extends LimitOrder {
      */
     public SellOrder(String traderId, String stockSymbol, double price, int quantity) {
         super(traderId, stockSymbol, price, quantity);
-        g = new GsonBuilder()
-                .registerTypeAdapter(SellOrder.class, new SellOrderAdapter().nullSafe())
-                .create();
     }
 
     /**

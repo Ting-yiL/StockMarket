@@ -5,7 +5,7 @@ import nl.rug.aoop.application.order.SellOrder;
 import nl.rug.aoop.application.trader.StockPortfolio;
 
 public interface Trading {
-    BuyOrder generateBuyOrder(StockPortfolio stockPortfolio);
+    BuyOrder generateBuyOrder();
 
-    SellOrder generateBellOrder(StockPortfolio stockPortfolio);
+    SellOrder generateSellOrder();
 }

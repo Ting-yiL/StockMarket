@@ -17,6 +17,7 @@ public class SellOrderCommand implements Command {
 
     @Override
     public void execute(Map<String, Object> params) {
+        log.info("Handling SellOrder command...");
         if (!params.isEmpty()) {
             if (params.containsKey("info")) {
                 String sellOrderJson = (String) params.get("Info");

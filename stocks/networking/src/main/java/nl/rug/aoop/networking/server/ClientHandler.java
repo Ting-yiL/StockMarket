@@ -1,5 +1,7 @@
 package nl.rug.aoop.networking.server;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
@@ -25,6 +27,9 @@ public class ClientHandler implements Runnable {
     private final MQServerMessageHandler messageHandler;
     private final int id;
     private Server server;
+    @Setter
+    @Getter
+    private int traderId = -1;
 
     /**
      * The Constructor of the Client Handler.

@@ -18,6 +18,7 @@ module application {
     opens nl.rug.aoop.application.trader to com.fasterxml.jackson.databind, com.google.gson;
     exports nl.rug.aoop.application.order;
     exports nl.rug.aoop.application.order.comparator;
+    opens nl.rug.aoop.application.order to com.google.gson;
     exports nl.rug.aoop.application.trader.tradingStrategy;
     opens nl.rug.aoop.application.trader.tradingStrategy to com.fasterxml.jackson.databind;
 }

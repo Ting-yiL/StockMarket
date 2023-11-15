@@ -8,6 +8,7 @@ import nl.rug.aoop.application.order.SellOrder;
 import nl.rug.aoop.application.stock.Stock;
 import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;
+import nl.rug.aoop.initialization.SimpleViewFactory;
 import nl.rug.aoop.model.StockDataModel;
 import nl.rug.aoop.application.trader.StockPortfolio;
 import nl.rug.aoop.application.trader.TraderData;
