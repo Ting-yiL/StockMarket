@@ -24,7 +24,7 @@ public class Server implements Runnable{
     private Map<Integer, ClientHandler> clientHandlerMap;
     private final ServerSocket serverSocket;
     private final ExecutorService service;
-    private MessageHandler messageHandler;
+    private MQServerMessageHandler messageHandler;
     private int id = 0;
     @Getter
     private boolean running = false;
@@ -34,7 +34,7 @@ public class Server implements Runnable{
      * @param port The port in which the connection happens.
      * @throws IOException In case of IOException error.
      */
-    public Server(int port, MessageHandler messageHandler) throws IOException {
+    public Server(int port, MQServerMessageHandler messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
         this.clientHandlerMap = new HashMap<>();
@@ -61,8 +61,9 @@ public class Server implements Runnable{
                 Socket socket = this.serverSocket.accept();
                 log.info("New connection from client");
                 log.info("Accepted new client connection from: " + socket.getRemoteSocketAddress());
-                clientHandlerMap.put(this.id, new ClientHandler(socket, (MQServerMessageHandler) this.messageHandler,
-                        this.id, this));
+                ClientHandler clientHandlerBuffer = new ClientHandler(socket, this.messageHandler, this.id, this);
+                clientHandlerMap.put(this.id, clientHandlerBuffer);
+                this.messageHandler.getClientHandlers().put(this.id, clientHandlerBuffer);
                 this.service.submit(clientHandlerMap.get(id));
                 this.id++;
                 //this.messageHandler.setClientHandlers((List<ClientHandler>) clientHandlerMap.values());

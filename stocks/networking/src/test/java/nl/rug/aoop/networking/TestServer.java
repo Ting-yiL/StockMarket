@@ -1,5 +1,6 @@
 package nl.rug.aoop.networking;
 
+import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.server.Server;
 import org.junit.jupiter.api.AfterEach;
@@ -20,11 +21,11 @@ public class TestServer {
     private Server server;
     private ExecutorService service;
     private final int PORT = 6200;
-    private MessageHandler messageHandler;
+    private MQServerMessageHandler messageHandler;
 
     @BeforeEach
     void setUp() throws IOException {
-        this.messageHandler = Mockito.mock(MessageHandler.class);
+        this.messageHandler = Mockito.mock(MQServerMessageHandler.class);
         this.service = Executors.newCachedThreadPool();
         this.server = new Server(PORT, messageHandler);
         this.service.submit(server);

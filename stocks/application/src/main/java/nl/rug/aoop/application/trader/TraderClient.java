@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.stock.StockMap;
+import nl.rug.aoop.application.trader.command.TraderClientCommandHandlerFactory;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.networking.messagequeue.NetworkProducer;
@@ -21,10 +22,10 @@ public class TraderClient {
     private StockMap stockMap;
     private AtomicBoolean status = new AtomicBoolean(false);
 
-    public TraderClient(String traderId, NetworkProducer networkProducer, TraderClientMessageHandler traderMessageHandler) {
+    public TraderClient(String traderId, NetworkProducer networkProducer) {
         this.traderId = traderId;
         this.networkProducer = networkProducer;
-        this.messageHandler = traderMessageHandler;
+        this.messageHandler = new TraderClientMessageHandler(this);
     }
 
     public String generateRequestProfileMessage() {

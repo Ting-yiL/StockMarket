@@ -14,7 +14,7 @@ public class NetworkConsumerMessageHandler implements MessageHandler{
     }
 
     @Override
-    public void handleMessage(String jsonMessage) {
+    public synchronized void  handleMessage(String jsonMessage) {
         try {
             Message message = Message.fromJson(jsonMessage);
             this.communicator.receiveMessage(message);

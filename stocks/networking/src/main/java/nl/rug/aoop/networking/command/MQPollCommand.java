@@ -19,8 +19,10 @@ public class MQPollCommand implements Command {
         if (this.queue.getSize()<=0) {
             log.info("Empty Queue");
         } else if (!params.isEmpty() && params.containsKey("reference")) {
+            log.info((String) params.get("reference"));
             ClientHandler clientHandler = (ClientHandler) params.get("reference");
             Message message = this.queue.dequeue();
+            log.info("Dequeue:" + message.toJson());
             clientHandler.sendMessage(message.toJson());
         } else {
             log.info("Dequeue Unsuccessful");

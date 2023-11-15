@@ -8,11 +8,10 @@ public class StockExchangeClient {
     private NetworkConsumer networkConsumer;
     private StockExchangeMessageHandler messageHandler;
 
-    public StockExchangeClient(NetworkConsumer networkConsumer,
-                               StockExchangeData stockExchangeData, StockExchangeMessageHandler messageHandler) {
+    public StockExchangeClient(NetworkConsumer networkConsumer, StockExchangeData stockExchangeData) {
         this.stockExchangeData = stockExchangeData;
         this.networkConsumer = networkConsumer;
-        this.messageHandler = messageHandler;
+        this.messageHandler  = new StockExchangeMessageHandler(this.stockExchangeData);
     }
 
     public void listenOrder() {

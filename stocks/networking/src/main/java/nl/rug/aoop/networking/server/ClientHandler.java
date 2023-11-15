@@ -69,8 +69,7 @@ public class ClientHandler implements Runnable {
                     break;
                 }
                 log.info("Received from client " + this.id + ": " + inputLine);
-                messageHandler.setReference(this);
-                messageHandler.handleMessage(inputLine);
+                messageHandler.handleMessage(inputLine, this.id);
             }
         } catch (IOException e) {
             log.error("Error reading string from client " + this.id);
@@ -83,6 +82,7 @@ public class ClientHandler implements Runnable {
      * @param message The message to be sent to the client.
      */
     public void sendMessage(String message) {
+        log.info("Sending: " + message);
         if (message != null && out != null) {
             out.println(message);
         }

@@ -1,5 +1,6 @@
 package nl.rug.aoop.application.stockExchange;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.order.OrderStatus;
@@ -17,6 +18,7 @@ import java.util.*;
 
 @Slf4j
 public class StockExchangeData implements StockExchangeDataModel {
+    @Getter
     StockMap stocks;
     private final Map<String, TraderData> traders = new HashMap<>();
     private final Map<Stock, PriorityQueue<BuyOrder>> bids = new HashMap<>();

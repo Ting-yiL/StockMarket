@@ -70,10 +70,9 @@ public class StockApplication {
 
         this.client = new Client(address, ConsumerMessageHandler);
 
-        StockExchangeMessageHandler stockExchangeMessageHandler = new StockExchangeMessageHandler(this.stockExchange);
         NetworkConsumer networkConsumer = new NetworkConsumer(this.client, communicator);
 
-        this.stockExchangeClient = new StockExchangeClient(networkConsumer, this.stockExchange, stockExchangeMessageHandler);
+        this.stockExchangeClient = new StockExchangeClient(networkConsumer, this.stockExchange);
     }
 
     private void setUpUI(SimpleViewFactory stockView) {

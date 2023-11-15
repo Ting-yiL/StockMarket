@@ -19,11 +19,12 @@ import java.util.concurrent.TimeUnit;
 @Getter
 @Setter
 @Slf4j
-public class TraderBot implements Runnable{
+public class TraderBot {
     private Trading strategy;
     private TraderClient traderClient;
 
-    private TraderBot(TraderClient traderClient) {
+    public TraderBot(TraderClient traderClient) {
+        this.traderClient = traderClient;
         this.strategy = new SmartTrading(traderClient.getStockMap(), traderClient.getTraderData());
     }
 
@@ -52,22 +53,17 @@ public class TraderBot implements Runnable{
         return new Message(command, orderMessage);
     }
 
-    @Override
-    public void run() {
-        log.info("Starting trader bot");
-        while(this.traderClient.initializedTraderProfile()
-                && this.traderClient.getNetworkProducer().getClient().isRunning()) {
+    public void trade() throws InterruptedException {
+        while(this.traderClient.initializedTraderProfile()) {
             log.info("Attempting to send an order...");
             int waitTime = (int) (Math.random() * ( 15 + 1));
             Message message = this.generateOrderCommandMessage();
             if (message != null) {
                 this.traderClient.getNetworkProducer().put(message);
             }
-            try {
-                TimeUnit.SECONDS.sleep(waitTime);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            TimeUnit.SECONDS.sleep(waitTime);
         }
     }
+
+
 }
