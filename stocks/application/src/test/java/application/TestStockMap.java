@@ -41,4 +41,9 @@ public class TestStockMap {
         assertEquals(2496000000L, nvda.getSharesOutstanding());
         assertEquals(222.42, nvda.getInitialPrice());
     }
+
+    @Test
+    void TestToJson() {
+        System.out.println(this.stocks.toJson());
+    }
 }

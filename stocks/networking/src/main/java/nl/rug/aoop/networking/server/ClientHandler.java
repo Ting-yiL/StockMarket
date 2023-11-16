@@ -1,8 +1,10 @@
 package nl.rug.aoop.networking.server;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
-import nl.rug.aoop.networking.handler.ServerMessageHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,9 +24,12 @@ public class ClientHandler implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private boolean running;
-    private final MessageHandler messageHandler;
+    private final MQServerMessageHandler messageHandler;
     private final int id;
     private Server server;
+    @Setter
+    @Getter
+    private int traderId = -1;
 
     /**
      * The Constructor of the Client Handler.
@@ -32,12 +37,11 @@ public class ClientHandler implements Runnable {
      * @param messageHandler The messageHandler you want to use.
      * @param id The id of the client handler.
      */
-    public ClientHandler(Socket socket, MessageHandler messageHandler, int id, Server server) {
+    public ClientHandler(Socket socket, MQServerMessageHandler messageHandler, int id, Server server) {
         this.socket = socket;
         this.id  = id;
         this.messageHandler = messageHandler;
         this.server = server;
-
         try {
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -53,7 +57,7 @@ public class ClientHandler implements Runnable {
     public void run() {
         this.running = true;
         boolean terminatingConnection;
-        sendMessage("Hello client " + this.id + ", you are now connected to the server!");
+        //sendMessage("Hello client " + this.id + ", you are now connected to the server!");
 
         try {
             while (this.running) {
@@ -64,7 +68,7 @@ public class ClientHandler implements Runnable {
                     break;
                 }
                 log.info("Received from client " + this.id + ": " + inputLine);
-                messageHandler.handleMessage(inputLine);
+                messageHandler.handleMessage(inputLine, this.id);
             }
         } catch (IOException e) {
             log.error("Error reading string from client " + this.id);
@@ -77,6 +81,7 @@ public class ClientHandler implements Runnable {
      * @param message The message to be sent to the client.
      */
     public void sendMessage(String message) {
+        log.info("Sending: " + message + " to Client id: " + id);
         if (message != null && out != null) {
             out.println(message);
         }

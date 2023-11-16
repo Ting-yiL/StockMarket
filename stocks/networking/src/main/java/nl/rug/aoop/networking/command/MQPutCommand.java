@@ -34,11 +34,12 @@ public class MQPutCommand implements Command {
             if ((params.get("header") instanceof String) && (params.get("body") instanceof String)) {
                 String header= (String) params.get("header");
                 String body = (String) params.get("body");
+                Integer clientHandlerId = (Integer) params.get("reference");
                 this.queue.enqueue(new Message(header, body));
-                log.info("Enqueue Successful, Header: " + header + ", Body: " + body);
-                return;
+                log.info("Enqueue Successful, Header: " + header + ", Body: " + body + ". From client handler: " + clientHandlerId);
+            } else {
+                log.info("Enqueue Unsuccessful");
             }
         }
-        log.info("Enqueue Unsuccessful");
     }
 }

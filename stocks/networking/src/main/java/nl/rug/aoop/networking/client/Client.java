@@ -63,7 +63,7 @@ public class Client implements Runnable {
      */
     public void sendMessage(String message) throws IllegalArgumentException {
         log.info("Sending a message from the client");
-        if (message == null || message.equals("")) {
+        if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("Attempting to send an invalid message.");
         }
         if (this.connected) {
@@ -82,9 +82,11 @@ public class Client implements Runnable {
                     terminate();
                     break;
                 }
+                log.info("receive message");
                 messageHandler.handleMessage(incomingMessage);
             } catch (IOException e) {
                 log.error("Could not receive message " + e.getMessage());
+                terminate();
             }
         }
     }

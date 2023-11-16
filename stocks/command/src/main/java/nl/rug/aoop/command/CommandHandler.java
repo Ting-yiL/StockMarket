@@ -49,7 +49,7 @@ public class CommandHandler {
      */
     public void execute(String command, Map<String, Object> params) {
         if (this.commandMap.containsKey(command)) {
-            //log.info(command + "executed");
+            log.info(command + " executed");
             this.commandMap.get(command).execute(params);
         }
     }

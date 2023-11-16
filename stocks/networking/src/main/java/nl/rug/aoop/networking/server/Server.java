@@ -2,13 +2,14 @@ package nl.rug.aoop.networking.server;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
-import nl.rug.aoop.networking.handler.ServerMessageHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,10 +21,10 @@ import java.util.concurrent.Executors;
  */
 @Slf4j
 public class Server implements Runnable{
-    private Map<Integer, ClientHandler> clientHandlerMap;
     private final ServerSocket serverSocket;
     private final ExecutorService service;
-    private final MessageHandler messageHandler;
+    @Getter
+    private MQServerMessageHandler messageHandler;
     private int id = 0;
     @Getter
     private boolean running = false;
@@ -31,14 +32,12 @@ public class Server implements Runnable{
     /**
      * The constructor of the Server.
      * @param port The port in which the connection happens.
-     * @param messageHandler The messageHandler you want to use.
      * @throws IOException In case of IOException error.
      */
-    public Server(int port, MessageHandler messageHandler) throws IOException {
+    public Server(int port, MQServerMessageHandler messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
         this.messageHandler = messageHandler;
-        this.clientHandlerMap = new HashMap<>();
     }
 
     /**
@@ -61,9 +60,11 @@ public class Server implements Runnable{
                 Socket socket = this.serverSocket.accept();
                 log.info("New connection from client");
                 log.info("Accepted new client connection from: " + socket.getRemoteSocketAddress());
-                clientHandlerMap.put(this.id, new ClientHandler(socket, this.messageHandler, this.id, this));
-                this.service.submit(clientHandlerMap.get(id));
+                ClientHandler clientHandlerBuffer = new ClientHandler(socket, this.messageHandler, this.id, this);
+                this.messageHandler.getClientHandlers().put(this.id, clientHandlerBuffer);
+                this.service.submit(this.messageHandler.getClientHandlers().get(id));
                 this.id++;
+                //this.messageHandler.setClientHandlers((List<ClientHandler>) clientHandlerMap.values());
             } catch (IOException e) {
                 log.error("Socket error", e);
             }
@@ -71,7 +72,7 @@ public class Server implements Runnable{
     }
 
     public void removeClientHandler(int id) {
-        clientHandlerMap.remove(id);
+        this.messageHandler.getClientHandlers().remove(id);
     }
 
     /**

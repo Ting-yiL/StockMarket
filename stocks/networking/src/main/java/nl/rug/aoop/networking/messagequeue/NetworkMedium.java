@@ -1,27 +1,34 @@
 package nl.rug.aoop.networking.messagequeue;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.messagequeue.message.Message;
-import nl.rug.aoop.networking.messagequeue.Communicator;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MQCommunicator implements Communicator {
+@Slf4j
+public class NetworkMedium implements Medium {
     AtomicBoolean received = new AtomicBoolean(false);
     @Getter
     Message message;
 
-    public MQCommunicator() {}
+    public NetworkMedium() {}
+
+    public Message retrieveMessage() {
+        while (!received.get()) {
+            Thread.onSpinWait();
+        }
+        log.info("Retrieve message: " + message.toJson());
+        return this.message;
+    }
 
     public void receiveMessage(Message message) {
+        this.resetStatus();
         if (message != null) {
+            log.info("Receive message" + message.toJson());
             this.message = message;
             this.received.set(true);
         }
-    }
-
-    public Boolean getStatus() {
-        return received.get();
     }
 
     public void resetStatus() {
