@@ -57,6 +57,17 @@ public class Client implements Runnable {
         }
     }
 
+    public String receiveMessage(int timeout) throws IOException {
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) < timeout) {
+            if (in.ready()) {
+                return in.readLine();
+            }
+        }
+        log.warn("Timeout reached while waiting for a message");
+        return null;
+    }
+
     /**
      * Sending String to the Server.
      * @param message The message you want to send to the server.

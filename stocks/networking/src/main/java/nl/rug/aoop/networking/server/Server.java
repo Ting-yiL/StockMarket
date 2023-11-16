@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
  */
 @Slf4j
 public class Server implements Runnable{
-    private Map<Integer, ClientHandler> clientHandlerMap;
     private final ServerSocket serverSocket;
     private final ExecutorService service;
     private MQServerMessageHandler messageHandler;
@@ -37,7 +36,6 @@ public class Server implements Runnable{
     public Server(int port, MQServerMessageHandler messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
-        this.clientHandlerMap = new HashMap<>();
         this.messageHandler = messageHandler;
     }
 
@@ -62,9 +60,8 @@ public class Server implements Runnable{
                 log.info("New connection from client");
                 log.info("Accepted new client connection from: " + socket.getRemoteSocketAddress());
                 ClientHandler clientHandlerBuffer = new ClientHandler(socket, this.messageHandler, this.id, this);
-                clientHandlerMap.put(this.id, clientHandlerBuffer);
                 this.messageHandler.getClientHandlers().put(this.id, clientHandlerBuffer);
-                this.service.submit(clientHandlerMap.get(id));
+                this.service.submit(this.messageHandler.getClientHandlers().get(id));
                 this.id++;
                 //this.messageHandler.setClientHandlers((List<ClientHandler>) clientHandlerMap.values());
             } catch (IOException e) {
@@ -74,7 +71,7 @@ public class Server implements Runnable{
     }
 
     public void removeClientHandler(int id) {
-        clientHandlerMap.remove(id);
+        this.messageHandler.getClientHandlers().remove(id);
     }
 
     /**

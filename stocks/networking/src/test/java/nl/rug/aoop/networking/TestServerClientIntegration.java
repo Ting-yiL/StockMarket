@@ -55,6 +55,6 @@ public class TestServerClientIntegration {
             e.printStackTrace();
         }
 
-        verify(serverMessageHandlerMock).handleMessage(messageToSend);
+        verify(serverMessageHandlerMock).handleMessage(messageToSend, 0);
     }
 }

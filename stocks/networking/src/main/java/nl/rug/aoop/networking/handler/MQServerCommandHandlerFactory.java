@@ -6,14 +6,22 @@ import nl.rug.aoop.networking.command.MQPollCommand;
 import nl.rug.aoop.networking.command.MQPutCommand;
 import nl.rug.aoop.networking.server.ClientHandler;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MQServerCommandHandlerFactory {
     private final ThreadSafeMessageQueue queue;
+    private final Map<Integer, ClientHandler> clientHandlers;
+
+    public MQServerCommandHandlerFactory(ThreadSafeMessageQueue queue, Map<Integer, ClientHandler> clientHandlers) {
+        this.queue = queue;
+        this.clientHandlers = clientHandlers;
+    }
 
     public MQServerCommandHandlerFactory(ThreadSafeMessageQueue queue) {
         this.queue = queue;
-        //this.clientHandlers = clientHandlers;
+        this.clientHandlers = new HashMap<>();
     }
 
     /**
@@ -23,7 +31,7 @@ public class MQServerCommandHandlerFactory {
     public CommandHandler createMQCommandHandler() {
         CommandHandler commandHandler = new CommandHandler();
         commandHandler.registerCommand("MqPut", new MQPutCommand(this.queue));
-        commandHandler.registerCommand("MqPoll", new MQPollCommand(this.queue));
+        commandHandler.registerCommand("MqPoll", new MQPollCommand(this.queue, this.clientHandlers));
         //commandHandler.registerCommand("UpdateProfile", );
         //commandHandler.registerCommand("UpdateStockMap");
         //commandHandler.registerCommand("RequestProfile");

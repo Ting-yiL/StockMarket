@@ -6,11 +6,8 @@ import nl.rug.aoop.messagequeue.consumer.MQConsumer;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.networking.client.Client;
-import org.awaitility.core.ConditionTimeoutException;
 
-import java.time.Duration;
-
-import static org.awaitility.Awaitility.await;
+import java.io.IOException;
 
 @Slf4j
 public class NetworkConsumer implements MQConsumer {
@@ -31,17 +28,20 @@ public class NetworkConsumer implements MQConsumer {
 
     @Override
     public Message poll() {
-        Message message = null;
-        String jsonMessage = this.createPollMessage();
-        log.info(jsonMessage);
-        client.sendMessage(jsonMessage);
         try {
-            await().atMost(Duration.ofMillis(TIMEOUT)).until(() -> communicator.getStatus());
-            message = this.communicator.getMessage();
-            this.communicator.resetStatus();
-        } catch (ConditionTimeoutException e) {
-            log.error("Empty queue", e);
+            String pollMessage = createPollMessage();
+            client.sendMessage(pollMessage);
+            String response = client.receiveMessage(TIMEOUT);
+            if (response != null) {
+                log.info(response);
+                return null;
+            } else {
+                log.error("Timeout while waiting for response from the server");
+            }
+        } catch (IOException e) {
+            log.error("Error while polling: " + e.getMessage());
         }
-        return message;
+
+        return null;
     }
 }

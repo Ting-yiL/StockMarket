@@ -20,12 +20,12 @@ public class MQServerMessageHandler implements MessageHandler{
     private final ThreadSafeMessageQueue queue;
     private final CommandHandler commandHandler;
     @Getter
-    private Map<Integer, ClientHandler> clientHandlers = new HashMap<>();
+    private final Map<Integer, ClientHandler> clientHandlers = new HashMap<>();
 
     public MQServerMessageHandler(ThreadSafeMessageQueue queue) {
         this.params = new HashMap<>();
         this.queue = queue;
-        this.commandHandler = new MQServerCommandHandlerFactory(this.queue).createMQCommandHandler();
+        this.commandHandler = new MQServerCommandHandlerFactory(this.queue, this.clientHandlers).createMQCommandHandler();
     }
 
     public synchronized void handleMessage(String jsonMessage, int clientHandlerId) {
@@ -44,7 +44,9 @@ public class MQServerMessageHandler implements MessageHandler{
             log.info("Body: " + body);
             this.params.put("body", body);
 
-            this.params.put("reference", clientHandlers.get(clientHandlerId));
+            String reference = String.valueOf(clientHandlerId);
+            log.info("ClientHandler ID: " + clientHandlerId);
+            this.params.put("reference", clientHandlerId);
 
             this.commandHandler.execute(command, params);
         }

@@ -17,13 +17,15 @@ public class TestMQPollCommand {
     private MQPollCommand command;
     private Map params;
     private final ClientHandler clientHandlerMock = Mockito.mock(ClientHandler.class);
+    private final Map<Integer, ClientHandler> clientHandlerMap = new HashMap<>();
 
     @BeforeEach
     void SetUp() {
         this.queue = new ThreadSafeMessageQueue();
-        this.command = new MQPollCommand(this.queue);
+        this.clientHandlerMap.put(0, clientHandlerMock);
+        this.command = new MQPollCommand(this.queue, this.clientHandlerMap);
         this.params = new HashMap<>();
-        this.params.put("reference", this.clientHandlerMock);
+        this.params.put("reference", 0);
         this.queue.enqueue(new Message("test", "test"));
     }
 

@@ -12,15 +12,21 @@ import java.util.Map;
 @Slf4j
 public class MQPollCommand implements Command {
     private final ThreadSafeMessageQueue queue;
+    private final Map<Integer, ClientHandler> clientHandlerMap;
 
-    public MQPollCommand(ThreadSafeMessageQueue queue) { this.queue = queue;}
+    public MQPollCommand(ThreadSafeMessageQueue queue, Map<Integer, ClientHandler> clientHandlerMap) {
+        this.queue = queue;
+        this.clientHandlerMap = clientHandlerMap;
+    }
 
     public void execute(Map<String, Object> params) {
         if (this.queue.getSize()<=0) {
             log.info("Empty Queue");
         } else if (!params.isEmpty() && params.containsKey("reference")) {
-            log.info((String) params.get("reference"));
-            ClientHandler clientHandler = (ClientHandler) params.get("reference");
+            String header= (String) params.get("header");
+            String body = (String) params.get("body");
+            Integer clientHandlerId = (Integer) params.get("reference");
+            ClientHandler clientHandler = this.clientHandlerMap.get(clientHandlerId);
             Message message = this.queue.dequeue();
             log.info("Dequeue:" + message.toJson());
             clientHandler.sendMessage(message.toJson());
