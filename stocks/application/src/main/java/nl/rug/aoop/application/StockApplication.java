@@ -3,21 +3,21 @@ package nl.rug.aoop.application;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.stockExchange.StockExchangeClient;
-import nl.rug.aoop.application.stockExchange.StockExchangeMessageHandler;
 import nl.rug.aoop.initialization.SimpleViewFactory;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;
 import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.application.trader.TraderData;
 import nl.rug.aoop.networking.client.Client;
 import nl.rug.aoop.networking.handler.NetworkConsumerMessageHandler;
-import nl.rug.aoop.networking.messagequeue.NetworkCommunicator;
 import nl.rug.aoop.networking.messagequeue.NetworkConsumer;
+import nl.rug.aoop.networking.messagequeue.NetworkMedium;
 import nl.rug.aoop.util.YamlLoader;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class StockApplication {
@@ -26,7 +26,6 @@ public class StockApplication {
     private final Path STOCKPATH = Path.of("stocks","data", "stocks.yaml");
     private final Path TRADERPATH = Path.of("stocks","data", "traders.yaml");
     private StockExchangeData stockExchange;
-    private Client client;
     private StockExchangeClient stockExchangeClient;
     private Thread messageListenerThread;
 
@@ -47,9 +46,16 @@ public class StockApplication {
     }
 
     public void  startOrderListener() {
+        this.stockExchangeClient.startListeningOrder();
+
         this.messageListenerThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 this.stockExchangeClient.listenOrder();
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -59,18 +65,12 @@ public class StockApplication {
 
     private void terminate() {
         log.info("Terminating Stock Application");
+        this.stockExchangeClient.stopListeningOrder();
         this.messageListenerThread.interrupt();
-        this.client.terminate();
     }
 
     public void setUpNetwork() throws IOException {
-        InetSocketAddress address = new InetSocketAddress(this.port);
-        NetworkCommunicator communicator = new NetworkCommunicator();
-        NetworkConsumerMessageHandler ConsumerMessageHandler = new NetworkConsumerMessageHandler(communicator);
-
-        this.client = new Client(address, ConsumerMessageHandler);
-
-        NetworkConsumer networkConsumer = new NetworkConsumer(this.client, communicator);
+        NetworkConsumer networkConsumer = new NetworkConsumer(this.port);
 
         this.stockExchangeClient = new StockExchangeClient(networkConsumer, this.stockExchange);
     }

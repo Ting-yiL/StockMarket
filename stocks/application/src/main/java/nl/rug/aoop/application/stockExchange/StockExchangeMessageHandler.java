@@ -30,6 +30,9 @@ public class StockExchangeMessageHandler {
             this.params.put("command", command);
             this.params.put("info", info);
 
+            log.info(command);
+            log.info(info);
+
             this.commandHandler.execute(command, params);
         }
     }

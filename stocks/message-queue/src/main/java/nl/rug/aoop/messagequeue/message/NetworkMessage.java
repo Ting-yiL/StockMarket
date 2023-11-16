@@ -3,6 +3,7 @@ package nl.rug.aoop.messagequeue.message;
 import com.google.gson.*;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
@@ -14,11 +15,15 @@ import java.time.LocalDateTime;
  * @version 1.0
  */
 @Getter
+@Slf4j
 public class NetworkMessage implements Comparable<NetworkMessage> {
     private String command;
     private final String header;
     private final String body;
     private final LocalDateTime timestamp;
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(NetworkMessage.class, new NetworkMessageAdapter().nullSafe())
+            .create();
 
     /**
      * The constructor of NetworkMessage.
@@ -61,10 +66,6 @@ public class NetworkMessage implements Comparable<NetworkMessage> {
      * @return JSON String version of the NetworkMessage.
      */
     public String toJson() {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(NetworkMessage.class, new NetworkMessageAdapter().nullSafe())
-                //.setPrettyPrinting()
-                .create();
         return gson.toJson(this);
     }
 
@@ -73,12 +74,15 @@ public class NetworkMessage implements Comparable<NetworkMessage> {
      * @param json The JSON String.
      * @return The Network Message version of the String.
      */
-    public static NetworkMessage fromJson(String json) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(NetworkMessage.class, new NetworkMessageAdapter().nullSafe())
-                .setPrettyPrinting()
-                .create();
-        return gson.fromJson(json, NetworkMessage.class);
+    public static NetworkMessage fromJson(String json) throws IllegalStateException{
+        try{
+            log.info("Decrypting Json");
+            NetworkMessage networkMessage = gson.fromJson(json, NetworkMessage.class);
+            log.info("Json Decrypted");
+            return networkMessage;
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Input is not NetworkMessage", e);
+        }
     }
 
     /**

@@ -5,18 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;
 import nl.rug.aoop.application.trader.*;
-import nl.rug.aoop.networking.client.Client;
 import nl.rug.aoop.networking.handler.MessageLogger;
 import nl.rug.aoop.networking.messagequeue.NetworkProducer;
 import nl.rug.aoop.util.YamlLoader;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 
-import static org.awaitility.Awaitility.await;
 
 @Slf4j
 public class TraderApplication {
@@ -24,7 +20,6 @@ public class TraderApplication {
     private final int port = 6200;
     private TraderData trader;
     private TraderBot bot;
-    private Client client;
     private TraderClient traderClient;
     private StockExchangeData stockExchangeData;
     private Thread botThread;
@@ -38,17 +33,17 @@ public class TraderApplication {
     }
 
     public void startTrading() {
-        log.info("Running trades");
+        log.info("start trading");
         this.botThread = new Thread(() -> {
-            await().atMost(Duration.ofMillis(TIMEOUT)).until(this.traderClient::initializedTraderProfile);
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     this.bot.trade();
                 } catch (InterruptedException e) {
-                    log.error("Sleep interrupted", e);
+                    throw new RuntimeException(e);
                 }
             }
         });
+
         this.botThread.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
     }
@@ -69,9 +64,7 @@ public class TraderApplication {
 
     private void terminate() {
         log.info("Terminating Stock Application");
-
         this.botThread.interrupt();
-        this.client.terminate();
     }
 
     private void loadTraderData() {
@@ -86,13 +79,9 @@ public class TraderApplication {
     }
     private void setUpNetWork() throws IOException {
         log.info("Setting up the network");
-        InetSocketAddress address = new InetSocketAddress(this.port);
 
-        this.client = new Client(address, new MessageLogger());
-
-        NetworkProducer producer = new NetworkProducer(this.client);
-
-        this.traderClient = new TraderClient("bot1", producer);
+        NetworkProducer networkProducer = new NetworkProducer(this.port, new MessageLogger());
+        this.traderClient = new TraderClient("bot1", networkProducer);
         this.traderClient.setTraderData(this.trader);
         this.traderClient.setStockMap(this.stockExchangeData.getStocks());
         this.bot = new TraderBot(this.traderClient);

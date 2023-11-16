@@ -49,7 +49,15 @@ public class TraderClient {
         return (this.traderData != null) && (this.stockMap != null);
     }
 
-    public void PutOrder(Message message) {
+    public void putOrder(Message message) {
         this.networkProducer.put(message);
+    }
+
+    public void startListening() {
+        this.networkProducer.start();
+    }
+
+    public void endListening() {
+        this.networkProducer.stop();
     }
 }

@@ -5,12 +5,13 @@ import nl.rug.aoop.application.trader.command.TraderClientCommandHandlerFactory;
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
+import nl.rug.aoop.networking.handler.MessageHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class TraderClientMessageHandler {
+public class TraderClientMessageHandler implements MessageHandler {
     private final Map<String, Object> params;
     private CommandHandler commandHandler;
     private TraderClientCommandHandlerFactory commandHandlerFactory;

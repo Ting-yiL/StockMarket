@@ -57,7 +57,7 @@ public class ClientHandler implements Runnable {
     public void run() {
         this.running = true;
         boolean terminatingConnection;
-        sendMessage("Hello client " + this.id + ", you are now connected to the server!");
+        //sendMessage("Hello client " + this.id + ", you are now connected to the server!");
 
         try {
             while (this.running) {
@@ -81,7 +81,7 @@ public class ClientHandler implements Runnable {
      * @param message The message to be sent to the client.
      */
     public void sendMessage(String message) {
-        log.info("Sending: " + message);
+        log.info("Sending: " + message + " to Client id: " + id);
         if (message != null && out != null) {
             out.println(message);
         }

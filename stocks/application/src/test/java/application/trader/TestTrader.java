@@ -18,7 +18,6 @@ public class TestTrader {
 
     @Test
     void toJson_ShouldReturnValidJson() {
-        // Serialize BuyOrder to JSON
         String json = trader.toJson();
 
         System.out.println(json);

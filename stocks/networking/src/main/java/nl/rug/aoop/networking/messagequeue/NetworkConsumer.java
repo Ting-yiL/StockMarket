@@ -6,20 +6,29 @@ import nl.rug.aoop.messagequeue.consumer.MQConsumer;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.networking.client.Client;
+import nl.rug.aoop.networking.handler.NetworkConsumerMessageHandler;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+
 
 @Slf4j
 public class NetworkConsumer implements MQConsumer {
     @Getter
     private final Client client;
-    private NetworkCommunicator communicator;
-    private final int TIMEOUT = 5000;
+    private final Medium medium = new NetworkMedium();
 
+    public NetworkConsumer(int port) throws IOException {
+        InetSocketAddress address = new InetSocketAddress(port);
+        this.client = new Client(address, new NetworkConsumerMessageHandler(this.medium));;
+    }
 
-    public NetworkConsumer(Client client, NetworkCommunicator communicator) {
-        this.client = client;
-        this.communicator = communicator;
+    public void start() {
+        new Thread(client).start();
+    }
+
+    public void stop() {
+        client.terminate();
     }
 
     public String createPollMessage() {
@@ -28,20 +37,9 @@ public class NetworkConsumer implements MQConsumer {
 
     @Override
     public Message poll() {
-        try {
-            String pollMessage = createPollMessage();
-            client.sendMessage(pollMessage);
-            String response = client.receiveMessage(TIMEOUT);
-            if (response != null) {
-                log.info(response);
-                return null;
-            } else {
-                log.error("Timeout while waiting for response from the server");
-            }
-        } catch (IOException e) {
-            log.error("Error while polling: " + e.getMessage());
-        }
-
-        return null;
+        log.info("Retrieving message from medium");
+        String pollMessage = createPollMessage();
+        client.sendMessage(pollMessage);
+        return this.medium.retrieveMessage();
     }
 }

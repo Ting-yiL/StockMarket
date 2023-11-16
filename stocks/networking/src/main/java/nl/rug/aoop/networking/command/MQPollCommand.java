@@ -3,7 +3,6 @@ package nl.rug.aoop.networking.command;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.command.Command;
 import nl.rug.aoop.messagequeue.message.Message;
-import nl.rug.aoop.networking.messagequeue.Communicator;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
 import nl.rug.aoop.networking.server.ClientHandler;
 
@@ -20,18 +19,27 @@ public class MQPollCommand implements Command {
     }
 
     public void execute(Map<String, Object> params) {
-        if (this.queue.getSize()<=0) {
-            log.info("Empty Queue");
-        } else if (!params.isEmpty() && params.containsKey("reference")) {
+        if (!params.isEmpty() && params.containsKey("reference")) {
             String header= (String) params.get("header");
             String body = (String) params.get("body");
             Integer clientHandlerId = (Integer) params.get("reference");
-            ClientHandler clientHandler = this.clientHandlerMap.get(clientHandlerId);
-            Message message = this.queue.dequeue();
-            log.info("Dequeue:" + message.toJson());
-            clientHandler.sendMessage(message.toJson());
+            if (this.queue.getSize()<=0) {
+                log.info("Empty Queue");
+                Message message = new Message("EmptyQueue", "");
+                ClientHandler clientHandler = this.clientHandlerMap.get(clientHandlerId);
+                clientHandler.sendMessage(message.toJson());
+                log.info("Message sent");
+            } else if (!params.isEmpty() && params.containsKey("reference")) {
+                Message message = this.queue.dequeue();
+                log.info("Dequeue:" + message.toJson());
+                ClientHandler clientHandler = this.clientHandlerMap.get(clientHandlerId);
+                clientHandler.sendMessage(message.toJson());
+                log.info("Message sent");
+            } else {
+                log.info("Dequeue Unsuccessful");
+            }
         } else {
-            log.info("Dequeue Unsuccessful");
+            log.info("Invalid params");
         }
     }
 }

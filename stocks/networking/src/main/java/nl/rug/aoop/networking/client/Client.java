@@ -57,24 +57,13 @@ public class Client implements Runnable {
         }
     }
 
-    public String receiveMessage(int timeout) throws IOException {
-        long startTime = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - startTime) < timeout) {
-            if (in.ready()) {
-                return in.readLine();
-            }
-        }
-        log.warn("Timeout reached while waiting for a message");
-        return null;
-    }
-
     /**
      * Sending String to the Server.
      * @param message The message you want to send to the server.
      */
     public void sendMessage(String message) throws IllegalArgumentException {
         log.info("Sending a message from the client");
-        if (message == null || message.equals("")) {
+        if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("Attempting to send an invalid message.");
         }
         if (this.connected) {
@@ -93,9 +82,11 @@ public class Client implements Runnable {
                     terminate();
                     break;
                 }
+                log.info("receive message");
                 messageHandler.handleMessage(incomingMessage);
             } catch (IOException e) {
                 log.error("Could not receive message " + e.getMessage());
+                terminate();
             }
         }
     }

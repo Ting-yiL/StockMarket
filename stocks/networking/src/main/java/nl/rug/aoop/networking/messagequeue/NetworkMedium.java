@@ -7,23 +7,28 @@ import nl.rug.aoop.messagequeue.message.Message;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public class NetworkCommunicator implements Communicator {
+public class NetworkMedium implements Medium {
     AtomicBoolean received = new AtomicBoolean(false);
     @Getter
     Message message;
 
-    public NetworkCommunicator() {}
+    public NetworkMedium() {}
+
+    public Message retrieveMessage() {
+        while (!received.get()) {
+            Thread.onSpinWait();
+        }
+        log.info("Retrieve message: " + message.toJson());
+        return this.message;
+    }
 
     public void receiveMessage(Message message) {
-        log.info("Receive message");
+        this.resetStatus();
         if (message != null) {
+            log.info("Receive message" + message.toJson());
             this.message = message;
             this.received.set(true);
         }
-    }
-
-    public Boolean getStatus() {
-        return received.get();
     }
 
     public void resetStatus() {

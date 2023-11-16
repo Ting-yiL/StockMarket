@@ -20,7 +20,7 @@ public class SellOrderCommand implements Command {
         log.info("Handling SellOrder command...");
         if (!params.isEmpty()) {
             if (params.containsKey("info")) {
-                String sellOrderJson = (String) params.get("Info");
+                String sellOrderJson = (String) params.get("info");
                 SellOrder sellOrder = SellOrder.fromJson(sellOrderJson);
                 this.stockExchangeData.matchSellOrder(sellOrder);
             } else {

@@ -1,7 +1,7 @@
 package nl.rug.aoop.networking.handler;
 
-import nl.rug.aoop.networking.messagequeue.Communicator;
+import nl.rug.aoop.networking.messagequeue.Medium;
 
 public interface ReferenceMessageHandler {
-    void handleMessage(String message, Communicator reference);
+    void handleMessage(String message, Medium reference);
 }

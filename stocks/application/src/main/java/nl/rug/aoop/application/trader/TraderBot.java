@@ -59,7 +59,7 @@ public class TraderBot {
             int waitTime = (int) (Math.random() * ( 15 + 1));
             Message message = this.generateOrderCommandMessage();
             if (message != null) {
-                this.traderClient.getNetworkProducer().put(message);
+                this.traderClient.putOrder(message);
             }
             TimeUnit.SECONDS.sleep(waitTime);
         }

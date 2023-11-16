@@ -20,7 +20,7 @@ public class BuyOrderCommand implements Command {
         log.info("Handling BuyOrder command...");
         if (!params.isEmpty()) {
             if (params.containsKey("info")) {
-                String buyOrderJson = (String) params.get("Info");
+                String buyOrderJson = (String) params.get("info");
                 BuyOrder buyOrder = BuyOrder.fromJson(buyOrderJson);
                 this.stockExchangeData.matchBuyOrder(buyOrder);
             } else {

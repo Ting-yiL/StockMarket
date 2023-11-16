@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 public class Server implements Runnable{
     private final ServerSocket serverSocket;
     private final ExecutorService service;
+    @Getter
     private MQServerMessageHandler messageHandler;
     private int id = 0;
     @Getter
