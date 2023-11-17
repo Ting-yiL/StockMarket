@@ -54,10 +54,12 @@ public class TraderClient {
     }
 
     public void startListening() {
+        log.info("Starting to listen...");
         this.networkProducer.start();
     }
 
     public void endListening() {
+        log.info("End listening...");
         this.networkProducer.stop();
     }
 }

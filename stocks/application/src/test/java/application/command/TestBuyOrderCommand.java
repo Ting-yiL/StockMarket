@@ -1,7 +1,7 @@
 package application.command;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import nl.rug.aoop.application.command.BuyOrderCommand;
+import nl.rug.aoop.application.stockExchange.command.BuyOrderCommand;
 import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;

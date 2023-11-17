@@ -1,28 +1,28 @@
-package nl.rug.aoop.application.command;
+package nl.rug.aoop.application.stockExchange.command;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.rug.aoop.application.order.BuyOrder;
+import nl.rug.aoop.application.order.SellOrder;
 import nl.rug.aoop.application.stockExchange.StockExchangeData;
 import nl.rug.aoop.command.Command;
 
 import java.util.Map;
 
 @Slf4j
-public class BuyOrderCommand implements Command {
+public class SellOrderCommand implements Command {
     private StockExchangeData stockExchangeData;
 
-    public BuyOrderCommand(StockExchangeData stockExchangeData) {
+    public SellOrderCommand(StockExchangeData stockExchangeData) {
         this.stockExchangeData = stockExchangeData;
     }
 
     @Override
     public void execute(Map<String, Object> params) {
-        log.info("Handling BuyOrder command...");
+        log.info("Handling SellOrder command...");
         if (!params.isEmpty()) {
             if (params.containsKey("info")) {
-                String buyOrderJson = (String) params.get("info");
-                BuyOrder buyOrder = BuyOrder.fromJson(buyOrderJson);
-                this.stockExchangeData.matchBuyOrder(buyOrder);
+                String sellOrderJson = (String) params.get("info");
+                SellOrder sellOrder = SellOrder.fromJson(sellOrderJson);
+                this.stockExchangeData.matchSellOrder(sellOrder);
             } else {
                 log.info("No order info");
             }

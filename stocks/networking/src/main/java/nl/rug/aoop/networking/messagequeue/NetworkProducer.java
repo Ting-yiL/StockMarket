@@ -7,8 +7,6 @@ import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.messagequeue.producer.MQProducer;
 import nl.rug.aoop.networking.client.Client;
 import nl.rug.aoop.networking.handler.MessageHandler;
-import nl.rug.aoop.networking.handler.MessageLogger;
-import nl.rug.aoop.networking.handler.NetworkConsumerMessageHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

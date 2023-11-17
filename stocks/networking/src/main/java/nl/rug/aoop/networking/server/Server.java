@@ -24,17 +24,18 @@ public class Server implements Runnable{
     private final ServerSocket serverSocket;
     private final ExecutorService service;
     @Getter
-    private MQServerMessageHandler messageHandler;
+    private MessageHandler messageHandler;
     private int id = 0;
     @Getter
     private boolean running = false;
+    private Map<Integer, ClientHandler> clientHandlerMap= new HashMap();
 
     /**
      * The constructor of the Server.
      * @param port The port in which the connection happens.
      * @throws IOException In case of IOException error.
      */
-    public Server(int port, MQServerMessageHandler messageHandler) throws IOException {
+    public Server(int port, MessageHandler messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
         this.messageHandler = messageHandler;
@@ -61,10 +62,9 @@ public class Server implements Runnable{
                 log.info("New connection from client");
                 log.info("Accepted new client connection from: " + socket.getRemoteSocketAddress());
                 ClientHandler clientHandlerBuffer = new ClientHandler(socket, this.messageHandler, this.id, this);
-                this.messageHandler.getClientHandlers().put(this.id, clientHandlerBuffer);
-                this.service.submit(this.messageHandler.getClientHandlers().get(id));
+                this.clientHandlerMap.put(this.id, clientHandlerBuffer);
+                this.service.submit(clientHandlerBuffer);
                 this.id++;
-                //this.messageHandler.setClientHandlers((List<ClientHandler>) clientHandlerMap.values());
             } catch (IOException e) {
                 log.error("Socket error", e);
             }
@@ -72,7 +72,7 @@ public class Server implements Runnable{
     }
 
     public void removeClientHandler(int id) {
-        this.messageHandler.getClientHandlers().remove(id);
+        this.clientHandlerMap.remove(id);
     }
 
     /**

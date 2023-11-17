@@ -1,12 +1,13 @@
-package nl.rug.aoop.application.command;
+package nl.rug.aoop.application.stockExchange;
 
-import nl.rug.aoop.application.stockExchange.StockExchangeData;
+import nl.rug.aoop.application.stockExchange.command.BuyOrderCommand;
+import nl.rug.aoop.application.stockExchange.command.SellOrderCommand;
 import nl.rug.aoop.command.CommandHandler;
 
-public class StockExchangeCommandHandlerFactory {
+public class OrderCommandHandlerFactory {
     private StockExchangeData stockExchangeData;
 
-    public StockExchangeCommandHandlerFactory(StockExchangeData stockExchangeData) {
+    public OrderCommandHandlerFactory(StockExchangeData stockExchangeData) {
         this.stockExchangeData = stockExchangeData;
     }
 

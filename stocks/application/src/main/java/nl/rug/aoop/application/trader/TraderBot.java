@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class TraderBot {
     private Trading strategy;
     private TraderClient traderClient;
+    private Thread tradeThread;
 
     public TraderBot(TraderClient traderClient) {
         this.traderClient = traderClient;
@@ -54,16 +55,24 @@ public class TraderBot {
     }
 
     public void trade() throws InterruptedException {
-        while(this.traderClient.initializedTraderProfile()) {
-            log.info("Attempting to send an order...");
-            int waitTime = (int) (Math.random() * ( 15 + 1));
-            Message message = this.generateOrderCommandMessage();
-            if (message != null) {
-                this.traderClient.putOrder(message);
+        this.tradeThread = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                log.info("Attempting to trade...");
+                int waitTime = (int) (Math.random() * ( 15 + 1));
+                Message message = this.generateOrderCommandMessage();
+                if (message != null) {
+                    this.traderClient.putOrder(message);
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(waitTime);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-            TimeUnit.SECONDS.sleep(waitTime);
-        }
+        });
+        this.tradeThread.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
     }
 
-
+    public void terminate() {};
 }

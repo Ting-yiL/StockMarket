@@ -24,7 +24,7 @@ public class ClientHandler implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private boolean running;
-    private final MQServerMessageHandler messageHandler;
+    private final MessageHandler messageHandler;
     private final int id;
     private Server server;
     @Setter
@@ -37,7 +37,7 @@ public class ClientHandler implements Runnable {
      * @param messageHandler The messageHandler you want to use.
      * @param id The id of the client handler.
      */
-    public ClientHandler(Socket socket, MQServerMessageHandler messageHandler, int id, Server server) {
+    public ClientHandler(Socket socket, MessageHandler messageHandler, int id, Server server) {
         this.socket = socket;
         this.id  = id;
         this.messageHandler = messageHandler;
@@ -68,7 +68,7 @@ public class ClientHandler implements Runnable {
                     break;
                 }
                 log.info("Received from client " + this.id + ": " + inputLine);
-                messageHandler.handleMessage(inputLine, this.id);
+                messageHandler.handleMessage(inputLine);
             }
         } catch (IOException e) {
             log.error("Error reading string from client " + this.id);
