@@ -102,7 +102,7 @@ public class StockExchangeServer {
             while (!Thread.currentThread().isInterrupted()) {
                 this.poll();
                 try {
-                    TimeUnit.SECONDS.sleep(3);
+                    TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
