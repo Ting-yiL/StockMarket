@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
+import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -24,7 +25,7 @@ public class Server implements Runnable{
     private final ServerSocket serverSocket;
     private final ExecutorService service;
     @Getter
-    private MessageHandler messageHandler;
+    private MessageHandlerWithReference messageHandler;
     private int id = 0;
     @Getter
     private boolean running = false;
@@ -35,7 +36,7 @@ public class Server implements Runnable{
      * @param port The port in which the connection happens.
      * @throws IOException In case of IOException error.
      */
-    public Server(int port, MessageHandler messageHandler) throws IOException {
+    public Server(int port, MessageHandlerWithReference messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
         this.messageHandler = messageHandler;

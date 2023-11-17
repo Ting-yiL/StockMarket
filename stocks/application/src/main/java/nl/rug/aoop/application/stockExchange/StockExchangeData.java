@@ -19,7 +19,7 @@ import java.util.*;
 @Slf4j
 public class StockExchangeData implements StockExchangeDataModel {
     @Getter
-    StockMap stocks;
+    private final StockMap stocks;
     private final Map<String, TraderData> traders = new HashMap<>();
     private final Map<Stock, PriorityQueue<BuyOrder>> bids = new HashMap<>();
     private final Map<Stock, PriorityQueue<SellOrder>> asks = new HashMap<>();

@@ -7,12 +7,11 @@ import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
 import nl.rug.aoop.networking.server.ClientHandler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class MQServerMessageHandler implements MessageHandler{
+public class MQServerMessageHandler implements MessageHandlerWithReference{
     private final Map<String, Object> params;
     private final ThreadSafeMessageQueue queue;
     private final CommandHandler commandHandler;
@@ -23,30 +22,6 @@ public class MQServerMessageHandler implements MessageHandler{
         this.params = new HashMap<>();
         this.queue = queue;
         this.commandHandler = new MQServerCommandHandlerFactory(this.queue, this.clientHandlers).createMQCommandHandler();
-    }
-
-    public synchronized void handleMessage(String jsonMessage, int clientHandlerId) {
-        if (jsonMessage != null) {
-            log.info("Handling message..");
-            NetworkMessage networkMessage = NetworkMessage.fromJson(jsonMessage);
-
-            String command = networkMessage.getCommand();
-            log.info("Command: " + command);
-
-            String header = networkMessage.getHeader();
-            log.info("Header: " + header);
-            this.params.put("header", header);
-
-            String body = networkMessage.getBody();
-            log.info("Body: " + body);
-            this.params.put("body", body);
-
-            String reference = String.valueOf(clientHandlerId);
-            log.info("ClientHandler ID: " + clientHandlerId);
-            this.params.put("reference", clientHandlerId);
-
-            this.commandHandler.execute(command, params);
-        }
     }
 
     public synchronized void handleMessage(String jsonMessage) {
@@ -78,6 +53,29 @@ public class MQServerMessageHandler implements MessageHandler{
                 this.commandHandler.execute(command, params);
             }
 
+        }
+    }
+
+    @Override
+    public void handleMessage(String message, Object reference) {
+        if (message != null) {
+            log.info("Handling message..");
+            NetworkMessage networkMessage = NetworkMessage.fromJson(message);
+
+            String command = networkMessage.getCommand();
+            log.info("Command: " + command);
+
+            String header = networkMessage.getHeader();
+            log.info("Header: " + header);
+            this.params.put("header", header);
+
+            String body = networkMessage.getBody();
+            log.info("Body: " + body);
+            this.params.put("body", body);
+
+            this.params.put("reference", reference);
+
+            this.commandHandler.execute(command, params);
         }
     }
 }
