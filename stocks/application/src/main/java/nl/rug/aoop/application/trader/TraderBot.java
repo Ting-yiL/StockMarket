@@ -13,16 +13,21 @@ import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.networking.client.Client;
 
+import java.time.Duration;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 
 @Getter
 @Setter
 @Slf4j
 public class TraderBot {
-    private Trading strategy;
+    private int TIMEOUT = 5000;
+    private SmartTrading strategy;
     private TraderClient traderClient;
     private Thread tradeThread;
+    private Thread listenThread;
 
     public TraderBot(TraderClient traderClient) {
         this.traderClient = traderClient;
@@ -39,8 +44,15 @@ public class TraderBot {
         return this.strategy.generateSellOrder();
     }
 
+    private void updateStrategyData() {
+        log.info("Update strategy Data");
+        this.strategy.setTraderData(this.traderClient.getTraderData());
+        this.strategy.setStockMap(this.traderClient.getStockMap());
+    }
+
     public Message generateOrderCommandMessage() {
         log.info("Generating Order Command");
+        this.updateStrategyData();
         Random random = new Random();
         String command;
         String orderMessage;
@@ -54,7 +66,21 @@ public class TraderBot {
         return new Message(command, orderMessage);
     }
 
-    public void trade() throws InterruptedException {
+    public void trade() {
+        log.info("Start trading...");
+        this.startListening();
+        this.startTrading();
+    }
+
+    public void startListening() {
+        log.info("Bot start listening...");
+        this.traderClient.startListening();
+    }
+
+    public void startTrading() {
+        log.info("Bot Sending request for the trader profile...");
+        this.traderClient.initializeTraderProfile();
+        await().atMost(Duration.ofMillis(TIMEOUT)).until(this.traderClient::initializedTraderProfile);
         this.tradeThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 log.info("Attempting to trade...");
@@ -74,5 +100,8 @@ public class TraderBot {
         Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
     }
 
-    public void terminate() {};
+    public void terminate() {
+        log.info("Terminate trading...");
+        this.traderClient.endListening();
+    };
 }

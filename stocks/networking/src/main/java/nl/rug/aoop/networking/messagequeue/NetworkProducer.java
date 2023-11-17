@@ -30,10 +30,12 @@ public class NetworkProducer implements MQProducer {
     }
 
     public void start() {
+        log.info("Start running the client");
         new Thread(client).start();
     }
 
     public void stop() {
+        log.info("Terminating the client");
         client.terminate();
     }
 

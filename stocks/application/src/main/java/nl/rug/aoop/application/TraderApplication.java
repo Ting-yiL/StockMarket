@@ -18,13 +18,8 @@ import java.util.List;
 public class TraderApplication {
     private static final int TIMEOUT = 5000;
     private final int port = 6200;
-    private TraderData trader;
     private TraderBot bot;
     private TraderClient traderClient;
-    private StockExchangeData stockExchangeData;
-    private Thread botThread;
-    private final Path STOCKPATH = Path.of("stocks","data", "stocks.yaml");
-    private final Path TRADERPATH = Path.of("stocks","data", "traders.yaml");
 
     public static void main(String[] args) {
         TraderApplication app = new TraderApplication();
@@ -34,26 +29,10 @@ public class TraderApplication {
 
     public void startTrading() {
         log.info("start trading");
-        this.botThread = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    this.bot.trade();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-
-        this.botThread.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
+        this.bot.trade();
     }
 
     private void initialize() {
-        try {
-            this.loadStockExchangeData(STOCKPATH,TRADERPATH);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         this.loadTraderData();
         try {
             this.setUpNetWork();
@@ -64,7 +43,7 @@ public class TraderApplication {
 
     private void terminate() {
         log.info("Terminating Stock Application");
-        this.botThread.interrupt();
+        this.bot.terminate();
     }
 
     private void loadTraderData() {
@@ -75,26 +54,12 @@ public class TraderApplication {
         stockPortfolio.getOwnedShares().put("AAPL", 15);
         stockPortfolio.getOwnedShares().put("ADBE", 1);
         stockPortfolio.getOwnedShares().put("FB", 3);
-        this.trader = new TraderData("bot1", "Just Bob", 10450, stockPortfolio);
+        //this.trader = new TraderData("bot1", "Just Bob", 10450, stockPortfolio);
     }
     private void setUpNetWork() throws IOException {
         log.info("Setting up the network");
 
-        NetworkProducer networkProducer = new NetworkProducer(this.port, new MessageLogger());
-        this.traderClient = new TraderClient("bot1", networkProducer);
-        this.traderClient.setTraderData(this.trader);
-        this.traderClient.setStockMap(this.stockExchangeData.getStocks());
+        this.traderClient = new TraderClient(this.port,"bot1");
         this.bot = new TraderBot(this.traderClient);
-    }
-
-    private void loadStockExchangeData(Path stockPath, Path tradePath) throws IOException {
-        YamlLoader yamlLoader1 = new YamlLoader(stockPath);
-        YamlLoader yamlLoader2 = new YamlLoader(tradePath);
-
-        List<TraderData> tradersList;
-        StockMap stocks;
-        stocks = yamlLoader1.load(StockMap.class);
-        tradersList = yamlLoader2.load(new TypeReference<>() {});
-        this.stockExchangeData = new StockExchangeData(stocks, tradersList);
     }
 }

@@ -30,8 +30,7 @@ public class TraderBotFacade {
 
     public void createBotsConnection() throws IOException {
         for (TraderData trader : traders) {
-            NetworkProducer networkProducerBuffer = new NetworkProducer(this.port, new MessageLogger());
-            TraderClient traderClientBuffer = new TraderClient(trader.getId(), networkProducerBuffer);
+            TraderClient traderClientBuffer = new TraderClient(this.port, trader.getId());
             traderClientBuffer.setTraderData(trader);
             traderClientBuffer.setStockMap(this.stockMap);
             traderBotList.add(new TraderBot(traderClientBuffer));

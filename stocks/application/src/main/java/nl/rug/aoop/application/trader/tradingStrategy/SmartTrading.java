@@ -12,10 +12,11 @@ import nl.rug.aoop.application.trader.TraderData;
 import java.util.List;
 import java.util.Random;
 
-@Setter
 @Getter
 public class SmartTrading implements Trading {
+    @Setter
     private StockMap stockMap;
+    @Setter
     private TraderData traderData;
 
     public SmartTrading(StockMap stockMap, TraderData traderData) {

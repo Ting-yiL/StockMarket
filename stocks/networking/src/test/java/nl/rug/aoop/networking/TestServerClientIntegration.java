@@ -71,7 +71,7 @@ public class TestServerClientIntegration {
     @Test
     public void testSendMessageFromServerToClient() {
         String messageToSend = "Hello, Client!";
-        server.getMessageHandler().getClientHandlers().get(0).sendMessage(messageToSend);
+        server.getClientHandlerMap().get(0).sendMessage(messageToSend);
 
         try {
             Thread.sleep(100);

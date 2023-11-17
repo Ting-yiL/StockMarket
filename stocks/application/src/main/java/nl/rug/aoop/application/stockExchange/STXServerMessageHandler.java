@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
-import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 
 import java.util.HashMap;
@@ -14,14 +13,14 @@ import java.util.Map;
 public class STXServerMessageHandler implements MessageHandlerWithReference {
     private final Map<String, Object> params;
     private final ThreadSafeMessageQueue queue;
-    private final StockExchangeData stockExchangeData;
+    private final STXManager stxManager;
     private final CommandHandler commandHandler;
 
-    public STXServerMessageHandler(ThreadSafeMessageQueue queue, StockExchangeData stockExchangeData) {
+    public STXServerMessageHandler(ThreadSafeMessageQueue queue, STXManager stxManager) {
         this.params = new HashMap<>();
         this.queue = queue;
-        this.stockExchangeData = stockExchangeData;
-        commandHandler = new STXServerCommandHandlerFactory(this.queue,this.stockExchangeData).createSXServerCommandHandler();
+        this.stxManager = stxManager;
+        commandHandler = new STXServerCommandHandlerFactory(this.queue,this.stxManager).createSXServerCommandHandler();
     }
 
     public synchronized void handleMessage(String jsonMessage, Object reference) {

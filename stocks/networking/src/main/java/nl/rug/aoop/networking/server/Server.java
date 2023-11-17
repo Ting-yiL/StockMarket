@@ -29,6 +29,7 @@ public class Server implements Runnable{
     private int id = 0;
     @Getter
     private boolean running = false;
+    @Getter
     private Map<Integer, ClientHandler> clientHandlerMap= new HashMap();
 
     /**

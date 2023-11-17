@@ -21,13 +21,14 @@ import static org.awaitility.Awaitility.await;
 
 @Slf4j
 public class StockExchangeServer {
-    private int port;
+    private final int port;
     private Server server;
     private OrderHandler orderHandler;
     private ThreadSafeMessageQueue queue;
     private StockExchangeData stockExchange;
     private ExecutorService service;
     private Thread pollingThread;
+    private STXManager stxManager;
 
     public StockExchangeServer(int port, Path stocksPath, Path traderPath) throws IOException {
         this.queue = new ThreadSafeMessageQueue();
@@ -37,7 +38,9 @@ public class StockExchangeServer {
         this.stockExchange = new StockExchangeData(yamlLoader1.load(StockMap.class),
                 yamlLoader2.load(new TypeReference<>() {}));
 
-        this.server = new Server(port, new STXServerMessageHandler(this.queue, this.stockExchange));
+        this.stxManager = new STXManager(this.stockExchange);
+
+        this.server = new Server(port, new STXServerMessageHandler(this.queue, this.stxManager));
         this.port = this.server.getPort();
 
         this.orderHandler = new OrderMessageHandler(this.stockExchange);
@@ -68,6 +71,8 @@ public class StockExchangeServer {
         if (message != null) {
             log.info("Handling Order...");
             this.orderHandler.handleOrder(message);
+            this.stxManager.updateAllTraderProfile();
+            this.stxManager.updateAllTraderStockMap();
         }
     }
 

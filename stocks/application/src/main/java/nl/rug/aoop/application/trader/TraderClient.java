@@ -9,6 +9,7 @@ import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.networking.messagequeue.NetworkProducer;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
@@ -22,27 +23,20 @@ public class TraderClient {
     private StockMap stockMap;
     private AtomicBoolean status = new AtomicBoolean(false);
 
-    public TraderClient(String traderId, NetworkProducer networkProducer) {
+    public TraderClient(int port, String traderId) throws IOException {
         this.traderId = traderId;
-        this.networkProducer = networkProducer;
         this.messageHandler = new TraderClientMessageHandler(this);
+        this.networkProducer = new NetworkProducer(port, this.messageHandler);
     }
 
-    public String generateRequestProfileMessage() {
+    public String generateRegisterProfileMessage() {
         Message message = new Message("Trader ID", traderId);
-        NetworkMessage networkMessage = new NetworkMessage("RequestProfile", message);
-        return networkMessage.toJson();
-    }
-
-    public String generateRequestStockMapUpdate() {
-        Message message = new Message("", "");
-        NetworkMessage networkMessage = new NetworkMessage("RequestStockMap", message);
+        NetworkMessage networkMessage = new NetworkMessage("RegisterProfile", message);
         return networkMessage.toJson();
     }
 
     public void initializeTraderProfile() {
-        this.networkProducer.getClient().sendMessage(this.generateRequestProfileMessage());
-        this.networkProducer.getClient().sendMessage(this.generateRequestStockMapUpdate());
+        this.networkProducer.getClient().sendMessage(this.generateRegisterProfileMessage());
     }
 
     public boolean initializedTraderProfile() {
