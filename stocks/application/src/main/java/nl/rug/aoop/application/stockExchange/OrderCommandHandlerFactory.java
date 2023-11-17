@@ -6,15 +6,17 @@ import nl.rug.aoop.command.CommandHandler;
 
 public class OrderCommandHandlerFactory {
     private StockExchangeData stockExchangeData;
+    private STXManager stxManager;
 
-    public OrderCommandHandlerFactory(StockExchangeData stockExchangeData) {
+    public OrderCommandHandlerFactory(StockExchangeData stockExchangeData, STXManager stxManager) {
         this.stockExchangeData = stockExchangeData;
+        this.stxManager = stxManager;
     }
 
     public CommandHandler createStockExchangeCommandHandler() {
         CommandHandler commandHandler = new CommandHandler();
-        commandHandler.registerCommand("BuyOrder", new BuyOrderCommand(this.stockExchangeData));
-        commandHandler.registerCommand("SellOrder", new SellOrderCommand(this.stockExchangeData));
+        commandHandler.registerCommand("BuyOrder", new BuyOrderCommand(this.stockExchangeData, this.stxManager));
+        commandHandler.registerCommand("SellOrder", new SellOrderCommand(this.stockExchangeData, this.stxManager));
         return commandHandler;
     }
 }

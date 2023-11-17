@@ -43,7 +43,7 @@ public class StockExchangeServer {
         this.server = new Server(port, new STXServerMessageHandler(this.queue, this.stxManager));
         this.port = this.server.getPort();
 
-        this.orderHandler = new OrderMessageHandler(this.stockExchange);
+        this.orderHandler = new OrderMessageHandler(this.stockExchange, this.stxManager);
         this.service = Executors.newCachedThreadPool();
     }
 

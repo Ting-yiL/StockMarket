@@ -30,4 +30,11 @@ public abstract class LimitOrder {
     public String toJson() {
         return g.toJson(this);
     }
+
+    public boolean equals(LimitOrder order) {
+        return this.traderID.equals(order.traderID) &&
+                this.stockSymbol.equals(order.getStockSymbol()) &&
+                (this.price == order.getPrice()) &&
+                (this.quantity == order.getQuantity());
+    }
 }

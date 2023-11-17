@@ -14,8 +14,8 @@ public class OrderMessageHandler implements OrderHandler {
     private CommandHandler commandHandler;
     private OrderCommandHandlerFactory commandHandlerFactory;
 
-    public OrderMessageHandler(StockExchangeData stockExchangeData) {
-        this.commandHandlerFactory = new OrderCommandHandlerFactory(stockExchangeData);
+    public OrderMessageHandler(StockExchangeData stockExchangeData, STXManager stxManager) {
+        this.commandHandlerFactory = new OrderCommandHandlerFactory(stockExchangeData, stxManager);
         this.commandHandler = this.commandHandlerFactory.createStockExchangeCommandHandler();
         this.params = new HashMap<>();
     }

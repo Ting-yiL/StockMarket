@@ -126,37 +126,50 @@ public class StockExchangeData implements StockExchangeDataModel {
         return false;
     }
 
-    public void matchBuyOrder(BuyOrder buyOrder) {
+    public Map<String, Object> matchBuyOrder(BuyOrder buyOrder) {
+        Map<String, Object> matchingInfo = null;
         if (validateBuyOrder(buyOrder)) {
+            matchingInfo = new HashMap<>();
             log.info("Matching buy order");
             SellOrder sellOrder = this.matchOrderFromAsks(buyOrder);
-            if (sellOrder == null) {
+            if (sellOrder == null || sellOrder.getTraderID().equals(buyOrder.getTraderID())) {
                 log.info("Buy Order not matched!");
                 this.addBids(buyOrder);
+                matchingInfo.put("matching status", false);
             } else {
                 log.info("Order matched");
                 this.resolveTrades(buyOrder, sellOrder, OrderStatus.BUY);
+                matchingInfo.put("matching status", true);
+                matchingInfo.put("buyer Id", buyOrder.getTraderID());
+                matchingInfo.put("seller Id", sellOrder.getTraderID());
             }
         } else {
             log.info("Invalid Order");
         }
+        return matchingInfo;
     }
 
-    public void matchSellOrder(SellOrder sellOrder) {
+    public Map<String, Object> matchSellOrder(SellOrder sellOrder) {
+        Map<String, Object> matchingInfo = null;
         if (validateSellOrder(sellOrder)) {
+            matchingInfo = new HashMap<>();
             log.info("Matching sell order");
             BuyOrder buyOrder = this.matchOrderFromBids(sellOrder);
-            if (buyOrder == null) {
+            if (buyOrder == null || sellOrder.getTraderID().equals(buyOrder.getTraderID())) {
                 log.info("Sell Order not matched!");
                 this.addAsks(sellOrder);
+                matchingInfo.put("matching status", false);
             } else {
                 log.info("Order matched");
                 this.resolveTrades(buyOrder, sellOrder, OrderStatus.SELL);
+                matchingInfo.put("matching status", true);
+                matchingInfo.put("buyer Id", buyOrder.getTraderID());
+                matchingInfo.put("seller Id", sellOrder.getTraderID());
             }
         } else {
             log.info("Invalid Order");
         }
-
+        return matchingInfo;
     }
 
     public void updateStockPrice(Stock stock, double buyPrice){

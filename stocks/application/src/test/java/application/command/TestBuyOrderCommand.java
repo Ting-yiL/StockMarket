@@ -1,6 +1,7 @@
 package application.command;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import nl.rug.aoop.application.stockExchange.STXManager;
 import nl.rug.aoop.application.stockExchange.command.BuyOrderCommand;
 import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.stock.StockMap;
@@ -9,6 +10,7 @@ import nl.rug.aoop.application.trader.TraderData;
 import nl.rug.aoop.util.YamlLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,6 +28,7 @@ public class TestBuyOrderCommand {
     private Map<String, Object> params;;
     private BuyOrder buyOrder;
     private String buyOrderJson;
+    private STXManager stxManager = Mockito.mock(STXManager.class);
 
     @BeforeEach
     void SetUp() throws IOException {
@@ -41,7 +44,7 @@ public class TestBuyOrderCommand {
         this.buyOrderJson = buyOrder.toJson();
         this.params = new HashMap<>();
         this.params.put("info", buyOrderJson);
-        this.command = new BuyOrderCommand(this.stockExchange);
+        this.command = new BuyOrderCommand(this.stockExchange, this.stxManager);
     }
 
     @Test
