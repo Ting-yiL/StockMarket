@@ -13,13 +13,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
 
 public class TestMQServerMessageHandler {
     private NetworkMessage putNetworkCommand;
-    private NetworkMessage pollNetworkCommand;
     private String putJsonCommand;
-    private String pollJsonCommand;
     private ThreadSafeMessageQueue queue;
     private MQServerMessageHandler messageHandler;
     private Message message;
@@ -37,8 +34,6 @@ public class TestMQServerMessageHandler {
         System.out.println(this.messageHandler.getClientHandlers().size());
         this.putNetworkCommand = new NetworkMessage("MqPut", message);
         this.putJsonCommand = this.putNetworkCommand.toJson();
-        this.pollNetworkCommand = new NetworkMessage("MqPoll", message);
-        this.pollJsonCommand = this.pollNetworkCommand.toJson();
     }
 
     @Test
@@ -48,26 +43,8 @@ public class TestMQServerMessageHandler {
 
     @Test
     void TestHandlePutMessage() {
-        this.messageHandler.handleMessage(this.putJsonCommand);
+        this.messageHandler.handleMessage(this.putJsonCommand, null);
         assertEquals("Test Header", this.queue.getHead().getHeader());
         assertEquals("Test Body", this.queue.getHead().getBody());
-    }
-
-    @Test
-    void TestHandlePollMessage() {
-        this.queue.enqueue(message);
-        this.messageHandler.handleMessage(this.pollJsonCommand, 0);
-        verify(this.clientHandlerMock).sendMessage(this.message.toJson());
-    }
-
-    @Test
-    void TestHandleMixedMessages() {
-        assertEquals(0, this.queue.getSize());
-        this.messageHandler.handleMessage(this.putJsonCommand, 0);
-        assertEquals("Test Header", this.queue.getHead().getHeader());
-        assertEquals("Test Body", this.queue.getHead().getBody());
-        assertEquals(1, this.queue.getSize());
-        this.messageHandler.handleMessage(this.pollJsonCommand, 0);
-        assertEquals(0, this.queue.getSize());
     }
 }

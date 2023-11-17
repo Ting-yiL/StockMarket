@@ -1,48 +1,45 @@
-package nl.rug.aoop.networking.handler;
+package nl.rug.aoop.application.stockExchange;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
-import nl.rug.aoop.networking.server.ClientHandler;
+import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * MQServerMessageHandler - A class that handle incoming message.
- * @author Dylan Bonatz, Ting-Yi Lin
- * @version 1.0
+ * The STXServerMessageHandler class.
  */
 @Slf4j
-public class MQServerMessageHandler implements MessageHandlerWithReference{
+public class STXServerMessageHandler implements MessageHandlerWithReference {
     private final Map<String, Object> params;
     private final ThreadSafeMessageQueue queue;
+    private final STXManager stxManager;
     private final CommandHandler commandHandler;
-    @Getter
-    private final Map<Integer, ClientHandler> clientHandlers = new HashMap<>();
 
     /**
-     * The Constructor of MQServerMessageHandler.
-     * @param queue A threadSafeQueue.
+     * The constructor of STXServerMessageHandler.
+     * @param queue The queue.
+     * @param stxManager The stxManager.
      */
-    public MQServerMessageHandler(ThreadSafeMessageQueue queue) {
+    public STXServerMessageHandler(ThreadSafeMessageQueue queue, STXManager stxManager) {
         this.params = new HashMap<>();
         this.queue = queue;
-        this.commandHandler = new MQServerCommandHandlerFactory(this.queue).createMQCommandHandler();
+        this.stxManager = stxManager;
+        commandHandler = new STXServerCommandHandlerFactory(this.queue,this.stxManager).createSTXServerCommandHandler();
     }
 
     /**
-     * Handling the message.
-     * @param message The message.
+     * Handling the message with reference.
+     * @param jsonMessage The message.
      * @param reference The reference to refer to.
      */
-    @Override
-    public void handleMessage(String message, Object reference) {
-        if (message != null) {
+    public synchronized void handleMessage(String jsonMessage, Object reference) {
+        if (jsonMessage != null) {
             log.info("Handling message..");
-            NetworkMessage networkMessage = NetworkMessage.fromJson(message);
+            NetworkMessage networkMessage = NetworkMessage.fromJson(jsonMessage);
 
             String command = networkMessage.getCommand();
             log.info("Command: " + command);

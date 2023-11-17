@@ -49,6 +49,13 @@ public class YamlLoader {
         return MAPPER.readValue(path.toFile(), clazz);
     }
 
+    /**
+     * Load a TypeReference from a yaml file.
+     * @param clazz The class of the TypeReference that should be loaded.
+     * @param <T> The generic type that the method should return.
+     * @return A TypeReference with the properties loaded from the provided yaml file.
+     * @throws IOException IOException.
+     */
     public <T> T load(TypeReference<T> clazz) throws IOException {
         return MAPPER.readValue(path.toFile(), clazz);
     }

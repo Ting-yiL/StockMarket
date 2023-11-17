@@ -1,7 +1,6 @@
 package nl.rug.aoop.model;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Data model of a trader.

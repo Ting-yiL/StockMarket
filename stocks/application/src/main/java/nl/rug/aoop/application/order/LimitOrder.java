@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The Limit Order - an abstract class for buy/sell order.
+ */
 @Getter
 @Setter
 public abstract class LimitOrder {
-    private static final Gson g = new Gson();
+    private static final Gson GSON = new Gson();
     private String traderID;
     private String stockSymbol;
     private double price;
@@ -25,9 +28,5 @@ public abstract class LimitOrder {
         this.stockSymbol = stockSymbol;
         this.price = price;
         this.quantity = quantity;
-    }
-
-    public String toJson() {
-        return g.toJson(this);
     }
 }

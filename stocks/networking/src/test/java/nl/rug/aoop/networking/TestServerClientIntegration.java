@@ -7,13 +7,10 @@ import nl.rug.aoop.networking.client.Client;
 import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.handler.MessageLogger;
-import nl.rug.aoop.networking.messagequeue.Medium;
 import nl.rug.aoop.networking.server.Server;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -74,7 +71,7 @@ public class TestServerClientIntegration {
     @Test
     public void testSendMessageFromServerToClient() {
         String messageToSend = "Hello, Client!";
-        server.getMessageHandler().getClientHandlers().get(0).sendMessage(messageToSend);
+        server.getClientHandlerMap().get(0).sendMessage(messageToSend);
 
         try {
             Thread.sleep(100);

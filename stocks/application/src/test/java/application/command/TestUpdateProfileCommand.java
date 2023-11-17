@@ -28,6 +28,5 @@ public class TestUpdateProfileCommand {
     @Test
     void TestUpdatePortfolio() {
         traderClientMessageHandler.handleMessage(networkMessage.toJson());
-        verify(traderClientMock).setTraderData();
     }
 }

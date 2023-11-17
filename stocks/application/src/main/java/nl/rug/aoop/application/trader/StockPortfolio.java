@@ -1,21 +1,25 @@
 package nl.rug.aoop.application.trader;
 
-import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.stock.Stock;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * The stock portfolio class.
+ */
 @Getter
 @Setter
 @Slf4j
 public class StockPortfolio {
     private Map<String, Integer> ownedShares;
 
+    /**
+     * The constructor of the StockPortfolio.
+     */
     public StockPortfolio() {
         ownedShares = new HashMap<>();
     }

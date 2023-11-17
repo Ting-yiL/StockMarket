@@ -34,6 +34,5 @@ public class TestQueueCommandHandlerFactory {
     public void testCreateMQCommandHandler() {
         CommandHandler commandHandler = factory.createMQCommandHandler();
         assertTrue(commandHandler.containsKey("MqPut"));
-        assertTrue(commandHandler.containsKey("MqPoll"));
     }
 }

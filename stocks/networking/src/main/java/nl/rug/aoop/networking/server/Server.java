@@ -2,14 +2,12 @@ package nl.rug.aoop.networking.server;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import nl.rug.aoop.networking.handler.MQServerMessageHandler;
-import nl.rug.aoop.networking.handler.MessageHandler;
+import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,17 +22,20 @@ public class Server implements Runnable{
     private final ServerSocket serverSocket;
     private final ExecutorService service;
     @Getter
-    private MQServerMessageHandler messageHandler;
+    private MessageHandlerWithReference messageHandler;
     private int id = 0;
     @Getter
     private boolean running = false;
+    @Getter
+    private Map<Integer, ClientHandler> clientHandlerMap= new HashMap();
 
     /**
      * The constructor of the Server.
      * @param port The port in which the connection happens.
+     * @param messageHandler The messageHandler.
      * @throws IOException In case of IOException error.
      */
-    public Server(int port, MQServerMessageHandler messageHandler) throws IOException {
+    public Server(int port, MessageHandlerWithReference messageHandler) throws IOException {
         this.serverSocket = new ServerSocket(port);
         this.service = Executors.newCachedThreadPool();
         this.messageHandler = messageHandler;
@@ -42,7 +43,7 @@ public class Server implements Runnable{
 
     /**
      * Getting the port from the server socket.
-     * @return Port of the socket
+     * @return Port of the socket.
      */
     public int getPort() {
         return this.serverSocket.getLocalPort();
@@ -61,18 +62,21 @@ public class Server implements Runnable{
                 log.info("New connection from client");
                 log.info("Accepted new client connection from: " + socket.getRemoteSocketAddress());
                 ClientHandler clientHandlerBuffer = new ClientHandler(socket, this.messageHandler, this.id, this);
-                this.messageHandler.getClientHandlers().put(this.id, clientHandlerBuffer);
-                this.service.submit(this.messageHandler.getClientHandlers().get(id));
+                this.clientHandlerMap.put(this.id, clientHandlerBuffer);
+                this.service.submit(clientHandlerBuffer);
                 this.id++;
-                //this.messageHandler.setClientHandlers((List<ClientHandler>) clientHandlerMap.values());
             } catch (IOException e) {
                 log.error("Socket error", e);
             }
         }
     }
 
+    /**
+     * Remove clientHandler by the provided id.
+     * @param id The id.
+     */
     public void removeClientHandler(int id) {
-        this.messageHandler.getClientHandlers().remove(id);
+        this.clientHandlerMap.remove(id);
     }
 
     /**

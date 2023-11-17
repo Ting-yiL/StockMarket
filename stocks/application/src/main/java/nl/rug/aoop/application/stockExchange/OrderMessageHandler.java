@@ -1,26 +1,39 @@
 package nl.rug.aoop.application.stockExchange;
 
 import lombok.extern.slf4j.Slf4j;
-import nl.rug.aoop.application.command.StockExchangeCommandHandlerFactory;
+import nl.rug.aoop.application.order.OrderHandler;
 import nl.rug.aoop.command.CommandHandler;
 import nl.rug.aoop.messagequeue.message.Message;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The Order MessageHandler.
+ */
 @Slf4j
-public class StockExchangeMessageHandler {
+public class OrderMessageHandler implements OrderHandler {
     private final Map<String, Object> params;
     private CommandHandler commandHandler;
-    private StockExchangeCommandHandlerFactory commandHandlerFactory;
+    private OrderCommandHandlerFactory commandHandlerFactory;
 
-    public StockExchangeMessageHandler(StockExchangeData stockExchangeData) {
-        this.commandHandlerFactory = new StockExchangeCommandHandlerFactory(stockExchangeData);
+    /**
+     * The constructor of OrderMessageHandler.
+     * @param stockExchangeData The StockExchangeData.
+     * @param stxManager The STX Manager.
+     */
+    public OrderMessageHandler(StockExchangeData stockExchangeData, STXManager stxManager) {
+        this.commandHandlerFactory = new OrderCommandHandlerFactory(stockExchangeData, stxManager);
         this.commandHandler = this.commandHandlerFactory.createStockExchangeCommandHandler();
         this.params = new HashMap<>();
     }
 
-    public void handleMessage(Message message) {
+    /**
+     * {@inheritDoc}
+     * @param message The message.
+     */
+    @Override
+    public void handleOrder(Message message) {
         if (message == null) {
             log.error("Null message");
         } else {
@@ -36,4 +49,5 @@ public class StockExchangeMessageHandler {
             this.commandHandler.execute(command, params);
         }
     }
+
 }

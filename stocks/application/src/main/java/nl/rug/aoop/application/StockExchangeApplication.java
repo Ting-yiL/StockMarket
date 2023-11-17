@@ -1,18 +1,19 @@
 package nl.rug.aoop.application;
 
-import nl.rug.aoop.application.trader.TraderBotFacade;
+import nl.rug.aoop.application.stockExchange.StockExchangeServer;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * The TraderApplication.
+ * The StockExchangeApplication.
  */
-public class TraderApplication {
+public class StockExchangeApplication {
     private static final int TIMEOUT = 5000;
     private final int port = 6200;
+    private final Path STOCKPATH = Path.of("stocks","data", "stocks.yaml");
     private final Path TRADERPATH = Path.of("stocks","data", "traders.yaml");
-    private TraderBotFacade traderBotFacade;
+    private StockExchangeServer stockExchangeServer;
 
     /**
      * The main method.
@@ -20,10 +21,11 @@ public class TraderApplication {
      * @throws IOException IOException.
      * @throws InterruptedException InterruptedException.
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
-        TraderApplication app = new TraderApplication();
+    public static void main(String[] args) throws IOException {
+        StockExchangeApplication app = new StockExchangeApplication();
         app.initialize();
         app.run();
+
     }
 
     /**
@@ -31,15 +33,14 @@ public class TraderApplication {
      * @throws IOException IOException.
      */
     public void initialize() throws IOException {
-        this.traderBotFacade = new TraderBotFacade(port, TRADERPATH);
-        this.traderBotFacade.createBotsConnection();
+        stockExchangeServer = new StockExchangeServer(port, STOCKPATH, TRADERPATH);
     }
 
     /**
      * Running the app.
      * @throws InterruptedException InterruptedException.
      */
-    public void run() throws InterruptedException {
-        this.traderBotFacade.startTrading();
+    public void run() {
+        this.stockExchangeServer.runStockExchangeServer();
     }
 }

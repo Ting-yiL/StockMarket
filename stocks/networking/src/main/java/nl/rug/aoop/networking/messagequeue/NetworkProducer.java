@@ -7,8 +7,6 @@ import nl.rug.aoop.messagequeue.message.NetworkMessage;
 import nl.rug.aoop.messagequeue.producer.MQProducer;
 import nl.rug.aoop.networking.client.Client;
 import nl.rug.aoop.networking.handler.MessageHandler;
-import nl.rug.aoop.networking.handler.MessageLogger;
-import nl.rug.aoop.networking.handler.NetworkConsumerMessageHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,6 +22,12 @@ public class NetworkProducer implements MQProducer {
     private final Client client;
     private MessageHandler messageHandler;
 
+    /**
+     * The constructor of the NetworkProducer.
+     * @param port The port.
+     * @param messageHandler The messageHandler.
+     * @throws IOException The IOException.
+     */
     public NetworkProducer(int port, MessageHandler messageHandler) throws IOException {
         InetSocketAddress address = new InetSocketAddress(port);
         this.messageHandler = messageHandler;
@@ -31,11 +35,19 @@ public class NetworkProducer implements MQProducer {
 
     }
 
+    /**
+     * Starts the client thread.
+     */
     public void start() {
+        log.info("Start running the client");
         new Thread(client).start();
     }
 
+    /**
+     * Stops the client thread.
+     */
     public void stop() {
+        log.info("Terminating the client");
         client.terminate();
     }
 

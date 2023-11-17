@@ -16,15 +16,22 @@ import nl.rug.aoop.model.TraderDataModel;
 
 import java.util.*;
 
+/**
+ * The StockExchangeData class - holds all data for the Stock Exchange.
+ */
 @Slf4j
 public class StockExchangeData implements StockExchangeDataModel {
     @Getter
-    StockMap stocks;
+    private final StockMap stocks;
     private final Map<String, TraderData> traders = new HashMap<>();
     private final Map<Stock, PriorityQueue<BuyOrder>> bids = new HashMap<>();
     private final Map<Stock, PriorityQueue<SellOrder>> asks = new HashMap<>();
 
-
+    /**
+     * The constructor for the StockExchange.
+     * @param stocks A StockMap of the stocks.
+     * @param traders A list of traders.
+     */
     public StockExchangeData(StockMap stocks, List<TraderData> traders) {
         this.stocks = stocks;
         for (TraderData trader : traders) {
@@ -36,6 +43,11 @@ public class StockExchangeData implements StockExchangeDataModel {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param index The index of the stock that should be accessed.
+     * @return Stock by index.
+     */
     @Override
     public StockDataModel getStockByIndex(int index) {
         List<String> stockList = new ArrayList<>(this.stocks.getStocks().keySet());
@@ -43,11 +55,20 @@ public class StockExchangeData implements StockExchangeDataModel {
         return this.stocks.getStocks().get(stockName);
     }
 
+    /**
+     * {@inheritDoc}
+     * @return The number of Stocks.
+     */
     @Override
     public int getNumberOfStocks() {
         return this.stocks.getStocks().size();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param index The index of the trader that should be accessed.
+     * @return Get trader by index.
+     */
     @Override
     public TraderDataModel getTraderByIndex(int index) {
         List<String> traderList = new ArrayList<>(this.traders.keySet());
@@ -55,19 +76,37 @@ public class StockExchangeData implements StockExchangeDataModel {
         return this.traders.get(tradeID);
     }
 
+    /**
+     * {@inheritDoc}
+     * @return Number of traders.
+     */
     @Override
     public int getNumberOfTraders() {
         return this.traders.size();
     }
 
+    /**
+     * Get stock by its symbol.
+     * @param stockSymbol The symbol.
+     * @return The stock.
+     */
     public Stock getStockBySymbol(String stockSymbol) {
         return this.stocks.getStocks().get(stockSymbol);
     }
 
+    /**
+     * Get traderData by his/her id.
+     * @param traderId The id.
+     * @return The TraderData
+     */
     public TraderData getTraderById(String traderId) {
         return this.traders.get(traderId);
     }
 
+    /**
+     * Adding a buyOrder to the Bids.
+     * @param order The buyOrder.
+     */
     public void addBids(BuyOrder order) {
         Stock orderStock = this.getStockBySymbol(order.getStockSymbol());
         if(!this.bids.containsKey(orderStock)) {
@@ -78,6 +117,10 @@ public class StockExchangeData implements StockExchangeDataModel {
         log.info("Buy Order added to bids!");
     }
 
+    /**
+     * Adding a sellOrder to the Asks.
+     * @param order The sellOrder.
+     */
     public void addAsks(SellOrder order) {
         Stock orderStock = this.getStockBySymbol(order.getStockSymbol());
         if(!this.asks.containsKey(orderStock)) {
@@ -88,6 +131,11 @@ public class StockExchangeData implements StockExchangeDataModel {
         log.info("Sell Order added to asks!");
     }
 
+    /**
+     * Match the order from asks.
+     * @param buyOrder The buyOrder.
+     * @return The matched sellOrder.
+     */
     public SellOrder matchOrderFromAsks(BuyOrder buyOrder) {
         SellOrder matchedOrder = null;
         Stock orderStock = this.getStockBySymbol(buyOrder.getStockSymbol());
@@ -100,6 +148,11 @@ public class StockExchangeData implements StockExchangeDataModel {
         return matchedOrder;
     }
 
+    /**
+     * Match the order from bids.
+     * @param sellOrder The sellOrder.
+     * @return The matched buyOrder.
+     */
     public BuyOrder matchOrderFromBids(SellOrder sellOrder) {
         BuyOrder matchedOrder = null;
         Stock orderStock = this.getStockBySymbol(sellOrder.getStockSymbol());
@@ -112,11 +165,21 @@ public class StockExchangeData implements StockExchangeDataModel {
         return matchedOrder;
     }
 
+    /**
+     * Validating a buyOrder.
+     * @param buyOrder The buyOrder.
+     * @return The validation.
+     */
     public boolean validateBuyOrder(BuyOrder buyOrder) {
         TraderData trader = this.getTraderById(buyOrder.getTraderID());
         return !(trader.getFunds() < buyOrder.getPrice() * buyOrder.getQuantity());
     }
 
+    /**
+     * Validating a sellOrder.
+     * @param sellOrder The sellOrder.
+     * @return The validation.
+     */
     public boolean validateSellOrder(SellOrder sellOrder) {
         TraderData trader = this.getTraderById(sellOrder.getTraderID());
         if (trader.getStockPortfolio().getOwnedShares().containsKey(sellOrder.getStockSymbol())){
@@ -126,45 +189,80 @@ public class StockExchangeData implements StockExchangeDataModel {
         return false;
     }
 
-    public void matchBuyOrder(BuyOrder buyOrder) {
+    /**
+     * Matching a buyOrder.
+     * @param buyOrder The buyOrder.
+     * @return The sellOrder.
+     */
+    public Map<String, Object> matchBuyOrder(BuyOrder buyOrder) {
+        Map<String, Object> matchingInfo = null;
         if (validateBuyOrder(buyOrder)) {
+            matchingInfo = new HashMap<>();
             log.info("Matching buy order");
             SellOrder sellOrder = this.matchOrderFromAsks(buyOrder);
-            if (sellOrder == null) {
+            if (sellOrder == null || sellOrder.getTraderID().equals(buyOrder.getTraderID())) {
                 log.info("Buy Order not matched!");
                 this.addBids(buyOrder);
+                matchingInfo.put("matching status", false);
             } else {
                 log.info("Order matched");
                 this.resolveTrades(buyOrder, sellOrder, OrderStatus.BUY);
+                matchingInfo.put("matching status", true);
+                matchingInfo.put("BuyOrder", buyOrder);
+                matchingInfo.put("SellOrder", sellOrder);
             }
         } else {
             log.info("Invalid Order");
         }
+        return matchingInfo;
     }
 
-    public void matchSellOrder(SellOrder sellOrder) {
+    /**
+     * Matching a sellOrder.
+     * @param sellOrder The sellOrder.
+     * @return The buyOrder.
+     */
+    public Map<String, Object> matchSellOrder(SellOrder sellOrder) {
+        Map<String, Object> matchingInfo = null;
         if (validateSellOrder(sellOrder)) {
+            matchingInfo = new HashMap<>();
             log.info("Matching sell order");
             BuyOrder buyOrder = this.matchOrderFromBids(sellOrder);
-            if (buyOrder == null) {
+            if (buyOrder == null || sellOrder.getTraderID().equals(buyOrder.getTraderID())) {
                 log.info("Sell Order not matched!");
                 this.addAsks(sellOrder);
+                matchingInfo.put("matching status", false);
             } else {
                 log.info("Order matched");
                 this.resolveTrades(buyOrder, sellOrder, OrderStatus.SELL);
+                matchingInfo.put("matching status", true);
+                matchingInfo.put("BuyOrder", buyOrder);
+                matchingInfo.put("SellOrder", sellOrder);
             }
         } else {
             log.info("Invalid Order");
         }
-
+        return matchingInfo;
     }
 
+    /**
+     * Updating a stock's price.
+     * @param stock The stock.
+     * @param buyPrice The new buy price.
+     */
     public void updateStockPrice(Stock stock, double buyPrice){
         stock.setPrice(buyPrice);
         stocks.setStockPrice(stock);
         log.info(stock.getSymbol() + " price updated");
     }
 
+    /**
+     * Updating a trader's portfolio.
+     * @param trader The trader.
+     * @param stock The stock.
+     * @param shares The amount of shares.
+     * @param funds The amount of funds.
+     */
     public void updateTraderPortfolio(TraderData trader, Stock stock, int shares, double funds) {
         String traderID = trader.getId();
         if (funds >= 0) {
@@ -177,6 +275,12 @@ public class StockExchangeData implements StockExchangeDataModel {
         log.info("Trader " + traderID + "'s portfolio updated");
     }
 
+    /**
+     * Perform trading.
+     * @param buyOrder The buyOrder.
+     * @param sellOrder The sellOrder.
+     * @param status The status of the Trade (Buying/Selling)
+     */
     public void resolveTrades(BuyOrder buyOrder, SellOrder sellOrder, OrderStatus status) {
         log.info("resolving trades");
         double buyPrice = buyOrder.getPrice();
@@ -192,6 +296,11 @@ public class StockExchangeData implements StockExchangeDataModel {
         this.updateStockPrice(stock, buyPrice);
     }
 
+    /**
+     * Resolving BuyTrades.
+     * @param buyOrder The buyOrder.
+     * @param sellOrder The sellOrder.
+     */
     public void resolveBuyTrades(BuyOrder buyOrder, SellOrder sellOrder) {
         TraderData buyer = this.getTraderById(buyOrder.getTraderID());
         double buyPrice = buyOrder.getPrice();
@@ -217,6 +326,11 @@ public class StockExchangeData implements StockExchangeDataModel {
         }
     }
 
+    /**
+     * Resolving SellTrades.
+     * @param buyOrder The buyOrder.
+     * @param sellOrder The sellOrder.
+     */
     public void resolveSellTrades(BuyOrder buyOrder, SellOrder sellOrder) {
         TraderData buyer = this.getTraderById(buyOrder.getTraderID());
         double buyPrice = buyOrder.getPrice();
