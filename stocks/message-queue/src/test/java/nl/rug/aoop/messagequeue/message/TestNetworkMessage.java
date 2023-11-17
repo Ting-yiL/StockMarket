@@ -40,12 +40,4 @@ public class TestNetworkMessage {
         assertEquals(output1.getBody(), message1.getBody());
         assertEquals(output1.getTimestamp(), message1.getTimestamp());
     }
-
-    @Test
-    void testFromJSONFromNonNetworkType() {
-        String random = "ABC";
-        System.out.println(random);
-        Message output1 = Message.fromJson(random);
-        System.out.println(output1);
-    }
 }

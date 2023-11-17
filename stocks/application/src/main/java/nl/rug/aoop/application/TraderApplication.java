@@ -1,65 +1,45 @@
 package nl.rug.aoop.application;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import lombok.extern.slf4j.Slf4j;
-import nl.rug.aoop.application.stock.StockMap;
-import nl.rug.aoop.application.stockExchange.StockExchangeData;
-import nl.rug.aoop.application.trader.*;
-import nl.rug.aoop.networking.handler.MessageLogger;
-import nl.rug.aoop.networking.messagequeue.NetworkProducer;
-import nl.rug.aoop.util.YamlLoader;
+import nl.rug.aoop.application.trader.TraderBotFacade;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 
-
-@Slf4j
+/**
+ * The TraderApplication.
+ */
 public class TraderApplication {
     private static final int TIMEOUT = 5000;
     private final int port = 6200;
-    private TraderBot bot;
-    private TraderClient traderClient;
+    private final Path TRADERPATH = Path.of("stocks","data", "traders.yaml");
+    private TraderBotFacade traderBotFacade;
 
-    public static void main(String[] args) {
+    /**
+     * The main method.
+     * @param args String args.
+     * @throws IOException IOException.
+     * @throws InterruptedException InterruptedException.
+     */
+    public static void main(String[] args) throws IOException, InterruptedException {
         TraderApplication app = new TraderApplication();
         app.initialize();
-        app.startTrading();
+        app.run();
     }
 
-    public void startTrading() {
-        log.info("start trading");
-        this.bot.trade();
+    /**
+     * Initializing the app.
+     * @throws IOException IOException.
+     */
+    public void initialize() throws IOException {
+        this.traderBotFacade = new TraderBotFacade(port, TRADERPATH);
+        this.traderBotFacade.createBotsConnection();
     }
 
-    private void initialize() {
-        this.loadTraderData();
-        try {
-            this.setUpNetWork();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void terminate() {
-        log.info("Terminating Stock Application");
-        this.bot.terminate();
-    }
-
-    private void loadTraderData() {
-        log.info("loading data");
-        StockPortfolio stockPortfolio = new StockPortfolio();
-        stockPortfolio.getOwnedShares().put("NVDA", 3);
-        stockPortfolio.getOwnedShares().put("AMD", 23);
-        stockPortfolio.getOwnedShares().put("AAPL", 15);
-        stockPortfolio.getOwnedShares().put("ADBE", 1);
-        stockPortfolio.getOwnedShares().put("FB", 3);
-        //this.trader = new TraderData("bot1", "Just Bob", 10450, stockPortfolio);
-    }
-    private void setUpNetWork() throws IOException {
-        log.info("Setting up the network");
-
-        this.traderClient = new TraderClient(this.port,"bot1");
-        this.bot = new TraderBot(this.traderClient);
+    /**
+     * Running the app.
+     * @throws InterruptedException InterruptedException.
+     */
+    public void run() throws InterruptedException {
+        this.traderBotFacade.startTrading();
     }
 }

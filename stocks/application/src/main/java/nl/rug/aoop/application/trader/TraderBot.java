@@ -4,14 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.order.BuyOrder;
-import nl.rug.aoop.application.order.LimitOrder;
 import nl.rug.aoop.application.order.SellOrder;
-import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.application.trader.tradingStrategy.SmartTrading;
-import nl.rug.aoop.application.trader.tradingStrategy.Trading;
 import nl.rug.aoop.messagequeue.message.Message;
-import nl.rug.aoop.messagequeue.message.NetworkMessage;
-import nl.rug.aoop.networking.client.Client;
 
 import java.time.Duration;
 import java.util.Random;
@@ -19,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+/**
+ * The TraderBot class.
+ */
 @Getter
 @Setter
 @Slf4j
@@ -29,27 +27,46 @@ public class TraderBot {
     private Thread tradeThread;
     private Thread listenThread;
 
+    /**
+     * The constructor of the TraderBot.
+     * @param traderClient The traderClient.
+     */
     public TraderBot(TraderClient traderClient) {
         this.traderClient = traderClient;
         this.strategy = new SmartTrading(traderClient.getStockMap(), traderClient.getTraderData());
     }
 
+    /**
+     * Generating buyOrder.
+     * @return A buyOrder.
+     */
     public BuyOrder generateBuyOrder() {
         log.info("Bot generating Buy Order");
         return this.strategy.generateBuyOrder();
     }
 
+    /**
+     * Generating sellOrder.
+     * @return A sellOrder.
+     */
     public SellOrder generateSellOrder() {
         log.info("Bot generating Sell Order");
         return this.strategy.generateSellOrder();
     }
 
+    /**
+     * Updating strategy data.
+     */
     private void updateStrategyData() {
         log.info("Update strategy Data");
         this.strategy.setTraderData(this.traderClient.getTraderData());
         this.strategy.setStockMap(this.traderClient.getStockMap());
     }
 
+    /**
+     * Generating Order Command Message.
+     * @return The Order Command Message.
+     */
     public Message generateOrderCommandMessage() {
         log.info("Generating Order Command");
         this.updateStrategyData();
@@ -66,17 +83,26 @@ public class TraderBot {
         return new Message(command, orderMessage);
     }
 
+    /**
+     * Starts trading.
+     */
     public void trade() {
         log.info("Start trading...");
         this.startListening();
         this.startTrading();
     }
 
+    /**
+     * Starts listening for incoming messages.
+     */
     public void startListening() {
         log.info("Bot start listening...");
         this.traderClient.startListening();
     }
 
+    /**
+     * Starts a trading thread.
+     */
     public void startTrading() {
         log.info("Bot Sending request for the trader profile...");
         this.traderClient.initializeTraderProfile();
@@ -100,8 +126,11 @@ public class TraderBot {
         Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
     }
 
+    /**
+     * Termination the client's connection.
+     */
     public void terminate() {
         log.info("Terminate trading...");
         this.traderClient.endListening();
-    };
+    }
 }

@@ -34,6 +34,12 @@ public class Client implements Runnable {
     private PrintWriter out;
     private final MessageHandler messageHandler;
 
+    /**
+     * The constructor of Client.
+     * @param address The InetSocketAddress.
+     * @param messageHandler The messageHandler.
+     * @throws IOException The IOException.
+     */
     public Client(InetSocketAddress address, MessageHandler messageHandler) throws IOException {
         this.messageHandler = messageHandler;
         initSocket(address);
@@ -71,6 +77,9 @@ public class Client implements Runnable {
         }
     }
 
+    /**
+     * Running the client socket.
+     */
     @Override
     public void run() {
         log.info("Attempt running the client");

@@ -2,15 +2,12 @@ package nl.rug.aoop.networking.server;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import nl.rug.aoop.networking.handler.MQServerMessageHandler;
-import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +32,7 @@ public class Server implements Runnable{
     /**
      * The constructor of the Server.
      * @param port The port in which the connection happens.
+     * @param messageHandler The messageHandler.
      * @throws IOException In case of IOException error.
      */
     public Server(int port, MessageHandlerWithReference messageHandler) throws IOException {
@@ -45,7 +43,7 @@ public class Server implements Runnable{
 
     /**
      * Getting the port from the server socket.
-     * @return Port of the socket
+     * @return Port of the socket.
      */
     public int getPort() {
         return this.serverSocket.getLocalPort();
@@ -73,6 +71,10 @@ public class Server implements Runnable{
         }
     }
 
+    /**
+     * Remove clientHandler by the provided id.
+     * @param id The id.
+     */
     public void removeClientHandler(int id) {
         this.clientHandlerMap.remove(id);
     }

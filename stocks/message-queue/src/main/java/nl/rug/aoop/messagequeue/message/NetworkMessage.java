@@ -21,7 +21,7 @@ public class NetworkMessage implements Comparable<NetworkMessage> {
     private final String header;
     private final String body;
     private final LocalDateTime timestamp;
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(NetworkMessage.class, new NetworkMessageAdapter().nullSafe())
             .create();
 
@@ -66,7 +66,7 @@ public class NetworkMessage implements Comparable<NetworkMessage> {
      * @return JSON String version of the NetworkMessage.
      */
     public String toJson() {
-        return gson.toJson(this);
+        return GSON.toJson(this);
     }
 
     /**
@@ -77,7 +77,7 @@ public class NetworkMessage implements Comparable<NetworkMessage> {
     public static NetworkMessage fromJson(String json) throws IllegalStateException{
         try{
             log.info("Decrypting Json");
-            NetworkMessage networkMessage = gson.fromJson(json, NetworkMessage.class);
+            NetworkMessage networkMessage = GSON.fromJson(json, NetworkMessage.class);
             log.info("Json Decrypted");
             return networkMessage;
         } catch (IllegalStateException e) {

@@ -12,6 +12,9 @@ import nl.rug.aoop.application.trader.TraderData;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * SmartTrading strategy.
+ */
 @Getter
 public class SmartTrading implements Trading {
     @Setter
@@ -19,11 +22,24 @@ public class SmartTrading implements Trading {
     @Setter
     private TraderData traderData;
 
+    /**
+     * The constructor of SmartTrading.
+     * @param stockMap The stockMap.
+     * @param traderData The traderData.
+     */
     public SmartTrading(StockMap stockMap, TraderData traderData) {
         this.stockMap = stockMap;
         this.traderData = traderData;
     }
 
+    /**
+     * Generates a random number from range with skewed-bias.
+     * @param mean The mean.
+     * @param margin The range from the mean.
+     * @param skew The amount of skewness.
+     * @param bias The direction of the skew.
+     * @return A skewed-bounded double.
+     */
     public int generateSkewedBoundedDouble(double mean, double margin, double skew, double bias) {
         Random random = new Random(System.currentTimeMillis());
         double max = mean + margin;
@@ -35,12 +51,22 @@ public class SmartTrading implements Trading {
         return (int) ((int) mid+(range*(biasFactor/(biasFactor+Math.exp(-unitGaussian/skew))-0.5)));
     }
 
+    /**
+     * Randomly selecting a stock from stockMap.
+     * @param stockMap The stockMap.
+     * @return A stock.
+     */
     public String randomSelectStock(StockMap stockMap) {
         Random generator = new Random();
         List<Object> values = List.of(stockMap.getStocks().keySet().toArray());
         return (String) values.get(generator.nextInt(values.size()));
     }
 
+    /**
+     * Randomly selecting a stock from stockPortfolio.
+     * @param stockPortfolio The stockPortfolio.
+     * @return A stock.
+     */
     public String randomSelectStock(StockPortfolio stockPortfolio) {
         if (!stockPortfolio.getOwnedShares().isEmpty()) {
             Random generator = new Random();
@@ -51,26 +77,52 @@ public class SmartTrading implements Trading {
         }
     }
 
+    /**
+     * Generating a buy price.
+     * @param stock The stock.
+     * @return The price.
+     */
     public int generateBuyPrice(Stock stock) {
-        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/5, 0.5, -1);
+        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/5, 0.25, -1);
     }
 
+    /**
+     * Generating a sell price.
+     * @param stock The stock.
+     * @return The price.
+     */
     public int generateSellPrice(Stock stock) {
-        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/5, 0.5, 1);
+        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/5, 0.25, 1);
     }
 
+    /**
+     * Generating a valid buy quantity.
+     * @param buyPrice The buy price.
+     * @param availFunds The available funds.
+     * @return A valid buy quantity.
+     */
     public int generateBuyQuantity(double buyPrice, double availFunds) {
         int maxQuantity = (int) (availFunds/buyPrice);
         int minQuantity = 1;
         return (int) (Math.random() * ( maxQuantity - minQuantity + 1)) + minQuantity;
     }
 
+    /**
+     * Generating a valid sell quantity of a stock from the stockPortfolio.
+     * @param stockSymbol The stock symbol.
+     * @param stockPortfolio The stockPortfolio.
+     * @return A valid buy quantity.
+     */
     public int generateSellQuantity(String stockSymbol, StockPortfolio stockPortfolio) {
         int maxQuantity = stockPortfolio.getOwnedShares().get(stockSymbol);
         int minQuantity = 1;
         return (int) (Math.random() * ( maxQuantity - minQuantity + 1)) + minQuantity;
     }
 
+    /**
+     * Generating a buyOrder.
+     * @return The buyOrder.
+     */
     @Override
     public BuyOrder generateBuyOrder() {
         String traderId = this.traderData.getId();
@@ -81,6 +133,10 @@ public class SmartTrading implements Trading {
         return new BuyOrder(traderId, stockSymbol, buyPrice, quantity);
     }
 
+    /**
+     * Generating a sellOrder.
+     * @return The sellOrder.
+     */
     @Override
     public SellOrder generateSellOrder() {
         if (this.traderData.getStockPortfolio() != null) {

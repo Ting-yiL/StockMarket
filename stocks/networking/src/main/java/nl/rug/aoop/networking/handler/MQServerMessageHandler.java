@@ -10,6 +10,11 @@ import nl.rug.aoop.networking.server.ClientHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MQServerMessageHandler - A class that handle incoming message.
+ * @author Dylan Bonatz, Ting-Yi Lin
+ * @version 1.0
+ */
 @Slf4j
 public class MQServerMessageHandler implements MessageHandlerWithReference{
     private final Map<String, Object> params;
@@ -18,44 +23,21 @@ public class MQServerMessageHandler implements MessageHandlerWithReference{
     @Getter
     private final Map<Integer, ClientHandler> clientHandlers = new HashMap<>();
 
+    /**
+     * The Constructor of MQServerMessageHandler.
+     * @param queue A threadSafeQueue.
+     */
     public MQServerMessageHandler(ThreadSafeMessageQueue queue) {
         this.params = new HashMap<>();
         this.queue = queue;
-        this.commandHandler = new MQServerCommandHandlerFactory(this.queue, this.clientHandlers).createMQCommandHandler();
+        this.commandHandler = new MQServerCommandHandlerFactory(this.queue).createMQCommandHandler();
     }
 
-    public synchronized void handleMessage(String jsonMessage) {
-        NetworkMessage networkMessage = null;
-        if (jsonMessage != null) {
-            log.info("Handling message..");
-            try {
-                log.info("Decrypting Json to Network message");
-                networkMessage = NetworkMessage.fromJson(jsonMessage);
-            } catch (IllegalStateException ignored) {
-                log.error("Error parsing Message", ignored);
-            }
-            log.info("Decrypt message..");
-            if (networkMessage == null) {
-                log.info("Note network message");
-                log.info("Receiving: " + jsonMessage);
-            } else {
-                String command = networkMessage.getCommand();
-                log.info("Command: " + command);
-
-                String header = networkMessage.getHeader();
-                log.info("Header: " + header);
-                this.params.put("header", header);
-
-                String body = networkMessage.getBody();
-                log.info("Body: " + body);
-                this.params.put("body", body);
-
-                this.commandHandler.execute(command, params);
-            }
-
-        }
-    }
-
+    /**
+     * Handling the message.
+     * @param message The message.
+     * @param reference The reference to refer to.
+     */
     @Override
     public void handleMessage(String message, Object reference) {
         if (message != null) {

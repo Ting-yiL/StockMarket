@@ -13,7 +13,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
 
 public class TestMQServerMessageHandler {
     private NetworkMessage putNetworkCommand;
@@ -44,9 +43,8 @@ public class TestMQServerMessageHandler {
 
     @Test
     void TestHandlePutMessage() {
-        this.messageHandler.handleMessage(this.putJsonCommand);
+        this.messageHandler.handleMessage(this.putJsonCommand, null);
         assertEquals("Test Header", this.queue.getHead().getHeader());
         assertEquals("Test Body", this.queue.getHead().getBody());
     }
-
 }

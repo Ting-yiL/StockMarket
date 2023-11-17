@@ -1,13 +1,12 @@
 package nl.rug.aoop.application.order;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * The SellOrder.
  */
 public class SellOrder extends LimitOrder {
-    private static final Gson g = new Gson();
+    private static final Gson GSON = new Gson();
 
     /**
      * The constructor of the sellOrder.
@@ -25,7 +24,7 @@ public class SellOrder extends LimitOrder {
      * @return Json string.
      */
     public String toJson() {
-        return g.toJson(this);
+        return GSON.toJson(this);
     }
 
     /**
@@ -34,7 +33,7 @@ public class SellOrder extends LimitOrder {
      * @return BuyOrder.
      */
     public static SellOrder fromJson(String str) {
-        return g.fromJson(str, SellOrder.class);
+        return GSON.fromJson(str, SellOrder.class);
     }
 
 }

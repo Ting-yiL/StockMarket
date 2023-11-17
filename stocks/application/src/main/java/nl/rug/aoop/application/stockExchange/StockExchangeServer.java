@@ -7,7 +7,6 @@ import nl.rug.aoop.application.stock.StockMap;
 import nl.rug.aoop.initialization.SimpleViewFactory;
 import nl.rug.aoop.messagequeue.message.Message;
 import nl.rug.aoop.messagequeue.queue.ThreadSafeMessageQueue;
-import nl.rug.aoop.networking.handler.MQServerMessageHandler;
 import nl.rug.aoop.networking.server.Server;
 import nl.rug.aoop.util.YamlLoader;
 
@@ -19,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
+/**
+ * The StockExchangeServer class - The center of StockExchangeData, Server, and the Queue.
+ */
 @Slf4j
 public class StockExchangeServer {
     private final int port;
@@ -30,6 +32,13 @@ public class StockExchangeServer {
     private Thread pollingThread;
     private STXManager stxManager;
 
+    /**
+     * The constructor of the StockExchangeServer.
+     * @param port The port.
+     * @param stocksPath The path of stocks data.
+     * @param traderPath The path of traders data.
+     * @throws IOException IOException.
+     */
     public StockExchangeServer(int port, Path stocksPath, Path traderPath) throws IOException {
         this.queue = new ThreadSafeMessageQueue();
 
@@ -47,9 +56,12 @@ public class StockExchangeServer {
         this.service = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Running StockExchangeServer.
+     */
     public void runStockExchangeServer() {
         log.info("Setting Up UI");
-        this.SetupUI();
+        this.setupUI();
 
         log.info("Running Stock Exchange Server...");
         this.service.submit(this.server);
@@ -57,25 +69,34 @@ public class StockExchangeServer {
         log.info("Stock Exchange Server is running...");
 
         log.info("Running Polling Thread");
-        this.runPollingThread();;
+        this.runPollingThread();
         await().until(this.pollingThread::isAlive);
-    };
+    }
 
-    public void SetupUI() {
+    /**
+     * Setting up the UI.
+     */
+    public void setupUI() {
         SimpleViewFactory simpleViewFactory = new SimpleViewFactory();
         simpleViewFactory.createView(this.stockExchange);
     }
+
+    /**
+     * Polling the message queue.
+     */
     public void poll() {
         log.info("Polling Order...");
         Message message = this.queue.dequeue();
         if (message != null) {
             log.info("Handling Order...");
             this.orderHandler.handleOrder(message);
-            this.stxManager.updateAllTraderProfile();
             this.stxManager.updateAllTraderStockMap();
         }
     }
 
+    /**
+     * Running a polling thread.
+     */
     public void runPollingThread() {
         this.pollingThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -92,6 +113,9 @@ public class StockExchangeServer {
         Runtime.getRuntime().addShutdownHook(new Thread(this::terminateStockExchange));
     }
 
+    /**
+     * Terminating the Stock Exchange.
+     */
     public void terminateStockExchange() {
         log.info("Shutting down Stock Exchange...");
         this.service.shutdown();

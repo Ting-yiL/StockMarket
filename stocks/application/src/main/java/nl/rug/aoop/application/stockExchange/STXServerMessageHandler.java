@@ -9,6 +9,9 @@ import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The STXServerMessageHandler class.
+ */
 @Slf4j
 public class STXServerMessageHandler implements MessageHandlerWithReference {
     private final Map<String, Object> params;
@@ -16,13 +19,23 @@ public class STXServerMessageHandler implements MessageHandlerWithReference {
     private final STXManager stxManager;
     private final CommandHandler commandHandler;
 
+    /**
+     * The constructor of STXServerMessageHandler.
+     * @param queue The queue.
+     * @param stxManager The stxManager.
+     */
     public STXServerMessageHandler(ThreadSafeMessageQueue queue, STXManager stxManager) {
         this.params = new HashMap<>();
         this.queue = queue;
         this.stxManager = stxManager;
-        commandHandler = new STXServerCommandHandlerFactory(this.queue,this.stxManager).createSXServerCommandHandler();
+        commandHandler = new STXServerCommandHandlerFactory(this.queue,this.stxManager).createSTXServerCommandHandler();
     }
 
+    /**
+     * Handling the message with reference.
+     * @param jsonMessage The message.
+     * @param reference The reference to refer to.
+     */
     public synchronized void handleMessage(String jsonMessage, Object reference) {
         if (jsonMessage != null) {
             log.info("Handling message..");

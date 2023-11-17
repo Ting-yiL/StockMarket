@@ -8,18 +8,30 @@ import nl.rug.aoop.messagequeue.message.Message;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The Order MessageHandler.
+ */
 @Slf4j
 public class OrderMessageHandler implements OrderHandler {
     private final Map<String, Object> params;
     private CommandHandler commandHandler;
     private OrderCommandHandlerFactory commandHandlerFactory;
 
+    /**
+     * The constructor of OrderMessageHandler.
+     * @param stockExchangeData The StockExchangeData.
+     * @param stxManager The STX Manager.
+     */
     public OrderMessageHandler(StockExchangeData stockExchangeData, STXManager stxManager) {
         this.commandHandlerFactory = new OrderCommandHandlerFactory(stockExchangeData, stxManager);
         this.commandHandler = this.commandHandlerFactory.createStockExchangeCommandHandler();
         this.params = new HashMap<>();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param message The message.
+     */
     @Override
     public void handleOrder(Message message) {
         if (message == null) {

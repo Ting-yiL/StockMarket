@@ -1,10 +1,7 @@
 package nl.rug.aoop.networking.server;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import nl.rug.aoop.networking.handler.MQServerMessageHandler;
-import nl.rug.aoop.networking.handler.MessageHandler;
 import nl.rug.aoop.networking.handler.MessageHandlerWithReference;
 
 import java.io.BufferedReader;
@@ -35,6 +32,7 @@ public class ClientHandler implements Runnable {
      * @param socket The socket of the Client Handler.
      * @param messageHandler The messageHandler you want to use.
      * @param id The id of the client handler.
+     * @param server The main server.
      */
     public ClientHandler(Socket socket, MessageHandlerWithReference messageHandler, int id, Server server) {
         this.socket = socket;
