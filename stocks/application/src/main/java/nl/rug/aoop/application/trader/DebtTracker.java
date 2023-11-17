@@ -1,5 +1,6 @@
 package nl.rug.aoop.application.trader;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.order.SellOrder;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class DebtTracker {
     private List<BuyOrder> pendingBuyOrder = new ArrayList<>();
     private List<SellOrder> pendingSellOrder = new ArrayList<>();
+    @Getter
     private double fundDebt = 0;
     private Map<String, Integer> shareDebt = new HashMap<>();
     private TraderClient traderClient;
@@ -81,6 +83,7 @@ public class DebtTracker {
         if (message.getHeader().equals("BuyOrder")) {
             BuyOrder buyOrder = BuyOrder.fromJson(message.getBody());
             double orderValue = buyOrder.getPrice() * buyOrder.getQuantity();
+            log.info("Verifying Buy Order: " + (this.traderClient.getTraderData().getFunds() - this.fundDebt - orderValue));
             return this.traderClient.getTraderData().getFunds() - this.fundDebt - orderValue > 0;
         } else {
             SellOrder sellOrder = SellOrder.fromJson(message.getBody());

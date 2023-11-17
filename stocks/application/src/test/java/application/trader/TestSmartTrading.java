@@ -1,12 +1,14 @@
 package application.trader;
 
 import nl.rug.aoop.application.stock.StockMap;
+import nl.rug.aoop.application.trader.DebtTracker;
 import nl.rug.aoop.application.trader.StockPortfolio;
 import nl.rug.aoop.application.trader.TraderData;
 import nl.rug.aoop.application.trader.tradingStrategy.SmartTrading;
 import nl.rug.aoop.util.YamlLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -16,6 +18,7 @@ public class TestSmartTrading {
     private final Path STOCKPATH = Path.of("C:\\Users\\ting\\IdeaProjects\\rug\\2023_Team_083\\stocks\\data\\stocks.yaml");
     private StockMap stocks;
     private TraderData traderData;
+    private DebtTracker debtTrackerMock = Mockito.mock(DebtTracker.class);
 
     @BeforeEach
     void SetUp() throws IOException {
@@ -30,7 +33,7 @@ public class TestSmartTrading {
 
         this.traderData = new TraderData("bot1", "Julia", 5000, stockPortfolio);
 
-        this.smartTrading = new SmartTrading(this.stocks, this.traderData);
+        this.smartTrading = new SmartTrading(this.stocks, this.traderData, debtTrackerMock);
     }
 
     @Test

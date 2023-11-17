@@ -6,6 +6,7 @@ import nl.rug.aoop.application.order.BuyOrder;
 import nl.rug.aoop.application.order.SellOrder;
 import nl.rug.aoop.application.stock.Stock;
 import nl.rug.aoop.application.stock.StockMap;
+import nl.rug.aoop.application.trader.DebtTracker;
 import nl.rug.aoop.application.trader.StockPortfolio;
 import nl.rug.aoop.application.trader.TraderData;
 
@@ -21,15 +22,18 @@ public class SmartTrading implements Trading {
     private StockMap stockMap;
     @Setter
     private TraderData traderData;
+    @Setter
+    private DebtTracker debtTracker;
 
     /**
      * The constructor of SmartTrading.
      * @param stockMap The stockMap.
      * @param traderData The traderData.
      */
-    public SmartTrading(StockMap stockMap, TraderData traderData) {
+    public SmartTrading(StockMap stockMap, TraderData traderData, DebtTracker debtTracker) {
         this.stockMap = stockMap;
         this.traderData = traderData;
+        this.debtTracker = debtTracker;
     }
 
     /**
@@ -129,7 +133,11 @@ public class SmartTrading implements Trading {
         String stockSymbol = this.randomSelectStock(this.stockMap);
         Stock stock = this.stockMap.getStocks().get(stockSymbol);
         double buyPrice = this.generateBuyPrice(stock);
-        int quantity = this.generateBuyQuantity(buyPrice, this.traderData.getFunds());
+        double availFunds = this.traderData.getFunds();
+        if (this.debtTracker != null) {
+            availFunds -= this.debtTracker.getFundDebt();
+        }
+        int quantity = this.generateBuyQuantity(buyPrice, availFunds);
         return new BuyOrder(traderId, stockSymbol, buyPrice, quantity);
     }
 

@@ -33,7 +33,9 @@ public class TraderBot {
      */
     public TraderBot(TraderClient traderClient) {
         this.traderClient = traderClient;
-        this.strategy = new SmartTrading(traderClient.getStockMap(), traderClient.getTraderData());
+        this.strategy = new SmartTrading(traderClient.getStockMap(),
+                traderClient.getTraderData(),
+                traderClient.getDebtTracker());
     }
 
     /**
@@ -61,6 +63,7 @@ public class TraderBot {
         log.info("Update strategy Data");
         this.strategy.setTraderData(this.traderClient.getTraderData());
         this.strategy.setStockMap(this.traderClient.getStockMap());
+        this.strategy.setDebtTracker(this.traderClient.getDebtTracker());
     }
 
     /**
