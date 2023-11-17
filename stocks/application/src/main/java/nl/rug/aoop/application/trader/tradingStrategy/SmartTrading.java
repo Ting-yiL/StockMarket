@@ -83,7 +83,7 @@ public class SmartTrading implements Trading {
      * @return The price.
      */
     public int generateBuyPrice(Stock stock) {
-        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/5, 0.25, -1);
+        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/10, 0.25, -1);
     }
 
     /**
@@ -92,7 +92,7 @@ public class SmartTrading implements Trading {
      * @return The price.
      */
     public int generateSellPrice(Stock stock) {
-        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/5, 0.25, 1);
+        return this.generateSkewedBoundedDouble(stock.getPrice(), stock.getPrice()/10, 0.25, 1);
     }
 
     /**

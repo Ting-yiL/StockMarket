@@ -90,6 +90,7 @@ public class StockExchangeServer {
         if (message != null) {
             log.info("Handling Order...");
             this.orderHandler.handleOrder(message);
+            this.stxManager.updateAllTraderProfile();
             this.stxManager.updateAllTraderStockMap();
         }
     }
